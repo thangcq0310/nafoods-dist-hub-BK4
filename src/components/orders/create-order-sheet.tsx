@@ -19,7 +19,6 @@ import {
 import {
   Form,
   FormControl,
-  FormDescription,
   FormField,
   FormItem,
   FormLabel,
@@ -42,6 +41,7 @@ const orderItemSchema = z.object({
 const formSchema = z.object({
   customerId: z.string().min(1, "Vui lòng chọn khách hàng."),
   addressId: z.string().min(1, "Vui lòng chọn địa chỉ giao hàng."),
+  shippingPhone: z.string().min(1, "Vui lòng nhập SĐT người nhận."),
   deliveryDate: z.string().min(1, "Vui lòng chọn ngày giao hàng."),
   items: z.array(orderItemSchema).min(1, "Đơn hàng phải có ít nhất 1 sản phẩm."),
 });
@@ -59,6 +59,7 @@ export function CreateOrderSheet() {
     defaultValues: {
       customerId: '',
       addressId: '',
+      shippingPhone: '',
       deliveryDate: '',
       items: [{ productId: '', quantity: 1, unit: 'Box' }],
     },
@@ -77,27 +78,45 @@ export function CreateOrderSheet() {
       const customer = customers.find(c => c.id === customerId);
       if (customer) {
         setSelectedCustomerAddresses(customer.addresses);
-        const primaryAddress = customer.addresses.find(a => a.isPrimary);
-        form.setValue('addressId', primaryAddress?.id || customer.addresses[0]?.id || '');
+        const primaryAddress = customer.addresses.find(a => a.isPrimary) || customer.addresses[0];
+        if (primaryAddress) {
+            form.setValue('addressId', primaryAddress.id);
+            form.setValue('shippingPhone', primaryAddress.phone);
+        } else {
+             form.setValue('addressId', '');
+             form.setValue('shippingPhone', '');
+        }
       }
     } else {
       setSelectedCustomerAddresses([]);
       form.setValue('addressId', '');
+      form.setValue('shippingPhone', '');
     }
   }, [customerId, customers, form]);
   
-  const selectedAddress = React.useMemo(() => {
-    return selectedCustomerAddresses.find(a => a.id === addressId);
-  }, [selectedCustomerAddresses, addressId]);
+  React.useEffect(() => {
+    if (addressId) {
+        const address = selectedCustomerAddresses.find(a => a.id === addressId);
+        if (address) {
+            form.setValue('shippingPhone', address.phone);
+        }
+    }
+  }, [addressId, selectedCustomerAddresses, form]);
 
   function onSubmit(data: OrderFormValues) {
     const customer = customers.find(c => c.id === data.customerId);
-    const shippingAddress = customer?.addresses.find(a => a.id === data.addressId);
+    const originalAddress = customer?.addresses.find(a => a.id === data.addressId);
     
-    if (!customer || !shippingAddress) {
+    if (!customer || !originalAddress) {
       toast({ title: "Lỗi", description: "Không tìm thấy khách hàng hoặc địa chỉ.", variant: "destructive" });
       return;
     }
+
+    // Create a new shipping address object for the order, using the potentially edited phone number
+    const shippingAddress: Address = {
+        ...originalAddress,
+        phone: data.shippingPhone,
+    };
 
     const newOrder = {
       customer,
@@ -132,26 +151,26 @@ export function CreateOrderSheet() {
           </SheetDescription>
         </SheetHeader>
         <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4 pt-4">
+          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4 pt-4 overflow-y-auto max-h-[calc(100vh-10rem)] pr-6">
+            <FormField
+              control={form.control}
+              name="customerId"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Khách hàng</FormLabel>
+                  <Select onValueChange={field.onChange} defaultValue={field.value}>
+                    <FormControl>
+                      <SelectTrigger><SelectValue placeholder="Chọn khách hàng" /></SelectTrigger>
+                    </FormControl>
+                    <SelectContent>
+                      {customers.map(c => <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>)}
+                    </SelectContent>
+                  </Select>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <FormField
-                control={form.control}
-                name="customerId"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Khách hàng</FormLabel>
-                    <Select onValueChange={field.onChange} defaultValue={field.value}>
-                      <FormControl>
-                        <SelectTrigger><SelectValue placeholder="Chọn khách hàng" /></SelectTrigger>
-                      </FormControl>
-                      <SelectContent>
-                        {customers.map(c => <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>)}
-                      </SelectContent>
-                    </Select>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
               <FormField
                 control={form.control}
                 name="addressId"
@@ -166,13 +185,23 @@ export function CreateOrderSheet() {
                         {selectedCustomerAddresses.map(a => <SelectItem key={a.id} value={a.id}>{a.street}, {a.city}</SelectItem>)}
                       </SelectContent>
                     </Select>
-                    {selectedAddress && (
-                        <FormDescription>SĐT Người nhận: {selectedAddress.phone}</FormDescription>
-                    )}
                     <FormMessage />
                   </FormItem>
                 )}
               />
+               <FormField
+                control={form.control}
+                name="shippingPhone"
+                render={({ field }) => (
+                    <FormItem>
+                        <FormLabel>SĐT người nhận</FormLabel>
+                        <FormControl>
+                            <Input placeholder="Nhập SĐT người nhận" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                    </FormItem>
+                )}
+                />
             </div>
              <FormField
               control={form.control}
@@ -256,7 +285,7 @@ export function CreateOrderSheet() {
               <PlusCircle className="mr-2 h-4 w-4" /> Thêm sản phẩm
             </Button>
             
-            <SheetFooter className="pt-4">
+            <SheetFooter className="pt-4 bg-background sticky bottom-0 z-10">
               <SheetClose asChild>
                 <Button type="button" variant="ghost">Hủy</Button>
               </SheetClose>
