@@ -1,3 +1,4 @@
+
 "use client"
 
 import type { ReactNode } from 'react';
@@ -38,7 +39,8 @@ export function DataProvider({ children }: { children: ReactNode }) {
         order.id === orderId ? { ...order, status } : order
       )
     );
-     // If an order is confirmed, it needs a delivery record
+
+    // If an order is confirmed, it needs a delivery record
     if (status === 'Confirmed') {
       const orderExistsInDeliveries = deliveries.some(d => d.order.id === orderId);
       if (!orderExistsInDeliveries) {
@@ -51,6 +53,18 @@ export function DataProvider({ children }: { children: ReactNode }) {
           };
           setDeliveries(prev => [...prev, newDelivery]);
         }
+      }
+    }
+
+    // If an order is canceled, cancel the corresponding delivery
+    if (status === 'Canceled') {
+      const deliveryToCancel = deliveries.find(d => d.order.id === orderId);
+      if (deliveryToCancel) {
+        setDeliveries(prevDeliveries =>
+          prevDeliveries.map(delivery =>
+            delivery.id === deliveryToCancel.id ? { ...delivery, status: 'Đã hủy' } : delivery
+          )
+        );
       }
     }
   }, [orders, deliveries]);
