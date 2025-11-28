@@ -62,7 +62,7 @@ export const orders: Order[] = generateOrders();
 
 const generateDeliveries = (orders: Order[]): Delivery[] => {
   let deliveries: Delivery[] = [];
-  const confirmedOrders = orders.filter(o => o.status === 'Confirmed');
+  const confirmedOrders = orders.filter(o => o.status === 'Confirmed' || o.status === 'Canceled');
   
   const deliveryStatuses: DeliveryStatus[] = ['Cần giao', 'Chờ giao', 'Đang giao', 'Đã giao', 'Thất bại', 'Đã hủy'];
 
@@ -71,8 +71,11 @@ const generateDeliveries = (orders: Order[]): Delivery[] => {
     let status: DeliveryStatus = 'Cần giao';
     let deliveryDetails: Partial<Delivery> = {};
 
-    if (i < confirmedOrders.length * 0.8) { // 80% have been processed beyond 'Needs Delivery'
-      const statusIndex = Math.floor(Math.random() * (deliveryStatuses.length - 1)) + 1; // Pick any status other than 'Needs Delivery'
+    // If order is canceled, its delivery is canceled
+    if (order.status === 'Canceled') {
+        status = 'Đã hủy';
+    } else if (i < confirmedOrders.length * 0.8) { // 80% have been processed beyond 'Needs Delivery'
+      const statusIndex = Math.floor(Math.random() * (deliveryStatuses.length - 2)) + 1; // Pick any status other than 'Needs Delivery' or 'Canceled'
       status = deliveryStatuses[statusIndex];
       const vendor = vendors[i % vendors.length];
       
@@ -102,10 +105,13 @@ const generateDeliveries = (orders: Order[]): Delivery[] => {
 
 export const deliveries: Delivery[] = generateDeliveries(orders);
 
-// Update order statuses based on deliveries that were canceled/failed
-deliveries.forEach(d => {
-  if (d.status === 'Đã hủy') {
-    const order = orders.find(o => o.id === d.order.id);
-    if(order) order.status = 'Canceled';
+// Ensure all confirmed orders have a delivery record.
+orders.forEach(order => {
+  if (order.status === 'Confirmed' && !deliveries.some(d => d.order.id === order.id)) {
+    deliveries.push({
+      id: `GH-${String(deliveries.length + 1).padStart(5, '0')}`,
+      order,
+      status: 'Cần giao',
+    });
   }
 });
