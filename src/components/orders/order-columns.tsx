@@ -72,37 +72,37 @@ export const orderColumns = [
   {
     accessorKey: "id",
     header: "Mã Đơn",
-    cell: ({ row }: { row: Order }) => <div className="font-medium">{row.id}</div>,
+    cell: ({ row }: { row: { original: Order } }) => <div className="font-medium">{row.original.id}</div>,
   },
   {
     accessorKey: "customer",
     header: "Khách hàng",
-    cell: ({ row }: { row: Order }) => row.customer.name,
+    cell: ({ row }: { row: { original: Order } }) => row.original.customer.name,
   },
   {
     accessorKey: "shippingAddress",
     header: "Địa chỉ",
-    cell: ({ row }: { row: Order }) => `${row.shippingAddress.street}, ${row.shippingAddress.city}`,
+    cell: ({ row }: { row: { original: Order } }) => `${row.original.shippingAddress.street}, ${row.original.shippingAddress.city}`,
   },
   {
     accessorKey: "orderDate",
     header: "Ngày đặt",
-    cell: ({ row }: { row: Order }) => format(new Date(row.orderDate), "dd/MM/yyyy"),
+    cell: ({ row }: { row: { original: Order } }) => format(new Date(row.original.orderDate), "dd/MM/yyyy"),
   },
   {
     accessorKey: "deliveryDate",
     header: "Ngày giao",
-    cell: ({ row }: { row: Order }) => format(new Date(row.deliveryDate), "dd/MM/yyyy"),
+    cell: ({ row }: { row: { original: Order } }) => format(new Date(row.original.deliveryDate), "dd/MM/yyyy"),
   },
   {
     accessorKey: "status",
     header: "Trạng thái",
-    cell: ({ row }: { row: Order }) => (
-      <Badge variant={statusVariant[row.status]}>{row.status}</Badge>
+    cell: ({ row }: { row: { original: Order } }) => (
+      <Badge variant={statusVariant[row.original.status]}>{row.original.status}</Badge>
     ),
   },
   {
     id: "actions",
-    cell: ({ row }: { row: Order }) => <RowActions order={row} />,
+    cell: ({ row }: { row: { original: Order } }) => <RowActions order={row.original} />,
   },
 ];
