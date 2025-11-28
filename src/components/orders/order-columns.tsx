@@ -7,12 +7,10 @@ import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Button } from "@/components/ui/button";
-import { MoreHorizontal, Check, Clipboard, Ban } from "lucide-react";
+import { Check, Ban } from "lucide-react";
 import { useData } from "@/hooks/use-data";
 import { useToast } from "@/hooks/use-toast";
 import { cn } from "@/lib/utils";
@@ -22,26 +20,6 @@ const statusConfig: { [key in OrderStatus]: { variant: "default" | "secondary" |
   "Confirmed": "default",
   "Pending Approval": "secondary",
   "Canceled": "destructive",
-};
-
-const RowActions = ({ order }: { order: { id: string } }) => {
-  return (
-    <DropdownMenu>
-      <DropdownMenuTrigger asChild>
-        <Button variant="ghost" className="h-8 w-8 p-0">
-          <span className="sr-only">Mở menu</span>
-          <MoreHorizontal className="h-4 w-4" />
-        </Button>
-      </DropdownMenuTrigger>
-      <DropdownMenuContent align="end">
-        <DropdownMenuLabel>Hành động</DropdownMenuLabel>
-        <DropdownMenuItem onClick={() => navigator.clipboard.writeText(order.id)}>
-          <Clipboard className="mr-2 h-4 w-4" />
-          Sao chép mã đơn
-        </DropdownMenuItem>
-      </DropdownMenuContent>
-    </DropdownMenu>
-  );
 };
 
 const StatusCell = ({ order }: { order: Order }) => {
@@ -76,7 +54,7 @@ const StatusCell = ({ order }: { order: Order }) => {
   const nextStatuses = getNextStatuses();
 
   const badge = (
-    <Badge variant={config.variant} className="gap-1 w-[150px] justify-center">
+    <Badge variant={config.variant} className="gap-1 w-[150px] justify-center cursor-pointer">
       {order.status}
     </Badge>
   );
@@ -88,9 +66,7 @@ const StatusCell = ({ order }: { order: Order }) => {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button variant="ghost" className="p-0 h-auto">
-          {badge}
-        </Button>
+        {badge}
       </DropdownMenuTrigger>
       <DropdownMenuContent align="start">
         {nextStatuses.map(({ status, label, icon: Icon, isDestructive }) => (
@@ -139,9 +115,5 @@ export const orderColumns = [
     accessorKey: "status",
     header: "Trạng thái",
     cell: ({ row }: { row: { original: Order } }) => <StatusCell order={row.original} />,
-  },
-  {
-    id: "actions",
-    cell: ({ row }: { row: { original: Order } }) => <RowActions order={row.original} />,
   },
 ];
