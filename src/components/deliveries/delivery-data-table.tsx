@@ -41,7 +41,6 @@ export function DeliveryDataTable({ statusFilter }: DeliveryDataTableProps) {
       newFilteredDeliveries = newFilteredDeliveries.filter(
         (delivery) =>
           delivery.order.id.toLowerCase().includes(filter.toLowerCase()) ||
-          delivery.id.toLowerCase().includes(filter.toLowerCase()) ||
           delivery.order.customer.name.toLowerCase().includes(filter.toLowerCase()) ||
           delivery.driverName?.toLowerCase().includes(filter.toLowerCase()) ||
           delivery.vehicleNumber?.toLowerCase().includes(filter.toLowerCase())
@@ -69,7 +68,7 @@ export function DeliveryDataTable({ statusFilter }: DeliveryDataTableProps) {
     <div className="space-y-4">
       <div className="flex items-center justify-between gap-4">
         <Input
-          placeholder="Lọc theo mã đơn, mã giao hàng, khách hàng, tài xế..."
+          placeholder="Lọc theo mã đơn, khách hàng, tài xế..."
           value={filter}
           onChange={(e) => setFilter(e.target.value)}
           className="max-w-md"

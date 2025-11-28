@@ -41,7 +41,6 @@ export default function PrintDeliveryPage() {
       <header className="flex justify-between items-start mb-8 print:mb-4">
         <div>
           <h1 className="text-3xl font-bold text-gray-800">PHIẾU GIAO HÀNG</h1>
-          <p className="text-gray-600">Mã giao hàng: {delivery.id}</p>
           <p className="text-gray-600">Mã đơn hàng: {order.id}</p>
         </div>
         <div className="text-right">

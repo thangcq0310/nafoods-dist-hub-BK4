@@ -55,8 +55,8 @@ export const RowActions = ({ delivery }: { delivery: Delivery }) => {
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end">
         <DropdownMenuLabel>Hành động</DropdownMenuLabel>
-        <DropdownMenuItem onClick={() => navigator.clipboard.writeText(delivery.id)}>
-          <Copy className="mr-2 h-4 w-4" /> Sao chép mã giao hàng
+        <DropdownMenuItem onClick={() => navigator.clipboard.writeText(delivery.order.id)}>
+          <Copy className="mr-2 h-4 w-4" /> Sao chép mã đơn hàng
         </DropdownMenuItem>
         
         {delivery.status === "Needs Delivery" && (
@@ -103,14 +103,9 @@ export const RowActions = ({ delivery }: { delivery: Delivery }) => {
 
 export const deliveryColumns = [
   {
-    accessorKey: "id",
-    header: "Mã Giao Hàng",
-    cell: ({ row }: { row: { original: Delivery } }) => <div className="font-medium">{row.original.id}</div>,
-  },
-  {
     accessorKey: "orderId",
     header: "Mã Đơn Hàng",
-    cell: ({ row }: { row: { original: Delivery } }) => row.original.order.id,
+    cell: ({ row }: { row: { original: Delivery } }) => <div className="font-medium">{row.original.order.id}</div>,
   },
   {
     accessorKey: "customer",
