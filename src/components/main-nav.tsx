@@ -36,12 +36,12 @@ export function MainNav() {
   const pathname = usePathname();
 
   return (
-    <div className="hidden md:flex items-center gap-6">
+    <div className="hidden md:flex items-center gap-2">
       <NavigationMenu>
         <NavigationMenuList>
           {navItems.map((item) => (
             <NavigationMenuItem key={item.href}>
-              <NavigationMenuLink asChild active={pathname === item.href}>
+              <NavigationMenuLink asChild active={pathname.startsWith(item.href)}>
                 <Link href={item.href} className={navigationMenuTriggerStyle()}>
                   {item.label}
                 </Link>
@@ -51,7 +51,7 @@ export function MainNav() {
           <NavigationMenuItem>
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button variant="ghost" className="gap-1">
+                 <Button variant={masterDataItems.some(item => pathname.startsWith(item.href)) ? "secondary" : "ghost"} className="gap-1">
                   Dữ liệu gốc <ChevronDown className="h-4 w-4" />
                 </Button>
               </DropdownMenuTrigger>
