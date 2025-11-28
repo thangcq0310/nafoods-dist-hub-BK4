@@ -1,18 +1,14 @@
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+
+import { ProductDataTable } from "@/components/products/product-data-table";
 
 export default function ProductsPage() {
   return (
     <div className="container mx-auto py-6">
       <div className="space-y-6">
-        <h1 className="text-3xl font-bold tracking-tight">Quản lý Sản phẩm</h1>
-        <Card>
-            <CardHeader>
-                <CardTitle>Coming Soon</CardTitle>
-            </CardHeader>
-            <CardContent>
-                <p>Chức năng quản lý sản phẩm (tên, danh mục, trạng thái) đang được phát triển.</p>
-            </CardContent>
-        </Card>
+        <div className="flex items-center justify-between">
+            <h1 className="text-3xl font-bold tracking-tight">Quản lý Sản phẩm</h1>
+        </div>
+        <ProductDataTable />
       </div>
     </div>
   );
