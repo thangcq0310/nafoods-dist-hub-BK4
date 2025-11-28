@@ -2,6 +2,13 @@
 
 import * as React from "react";
 import {
+  ColumnDef,
+  flexRender,
+  getCoreRowModel,
+  useReactTable,
+} from "@tanstack/react-table";
+
+import {
   Table,
   TableBody,
   TableCell,
@@ -20,7 +27,7 @@ interface DeliveryDataTableProps {
 
 export function DeliveryDataTable({ statusFilter }: DeliveryDataTableProps) {
   const { deliveries } = useData();
-  const [filteredDeliveries, setFilteredDeliveries] = React.useState<Delivery[]>([]);
+  const [data, setData] = React.useState<Delivery[]>([]);
   const [filter, setFilter] = React.useState("");
 
   React.useEffect(() => {
@@ -41,10 +48,22 @@ export function DeliveryDataTable({ statusFilter }: DeliveryDataTableProps) {
       );
     }
 
-    setFilteredDeliveries(newFilteredDeliveries);
+    setData(newFilteredDeliveries);
   }, [filter, statusFilter, deliveries]);
+  
+  const columns: ColumnDef<Delivery>[] = [
+    ...deliveryColumns,
+    {
+      id: "actions",
+      cell: ({ row }) => <RowActions delivery={row.original} />,
+    },
+  ]
 
-  const columns = deliveryColumns;
+  const table = useReactTable({
+    data,
+    columns,
+    getCoreRowModel: getCoreRowModel(),
+  });
 
   return (
     <div className="space-y-4">
@@ -59,31 +78,41 @@ export function DeliveryDataTable({ statusFilter }: DeliveryDataTableProps) {
       <div className="rounded-md border">
         <Table>
           <TableHeader>
-            <TableRow>
-              {columns.map((col) => (
-                <TableHead key={col.accessorKey}>{col.header}</TableHead>
-              ))}
-              <TableHead className="text-right">Hành động</TableHead>
-            </TableRow>
+            {table.getHeaderGroups().map((headerGroup) => (
+              <TableRow key={headerGroup.id}>
+                {headerGroup.headers.map((header) => {
+                  return (
+                    <TableHead key={header.id}>
+                      {header.isPlaceholder
+                        ? null
+                        : flexRender(
+                            header.column.columnDef.header,
+                            header.getContext()
+                          )}
+                    </TableHead>
+                  );
+                })}
+              </TableRow>
+            ))}
           </TableHeader>
           <TableBody>
-            {filteredDeliveries.length ? (
-              filteredDeliveries.map((delivery) => (
-                <TableRow key={delivery.id}>
-                  {columns.map((col) => (
-                    <TableCell key={col.accessorKey}>
-                      {col.cell ? col.cell({ row: delivery }) : (delivery as any)[col.accessorKey]}
+            {table.getRowModel().rows?.length ? (
+              table.getRowModel().rows.map((row) => (
+                <TableRow
+                  key={row.id}
+                  data-state={row.getIsSelected() && "selected"}
+                >
+                  {row.getVisibleCells().map((cell) => (
+                    <TableCell key={cell.id}>
+                      {flexRender(cell.column.columnDef.cell, cell.getContext())}
                     </TableCell>
                   ))}
-                  <TableCell className="text-right">
-                    <RowActions delivery={delivery} />
-                  </TableCell>
                 </TableRow>
               ))
             ) : (
               <TableRow>
                 <TableCell
-                  colSpan={columns.length + 1}
+                  colSpan={columns.length}
                   className="h-24 text-center"
                 >
                   Không tìm thấy kết quả.

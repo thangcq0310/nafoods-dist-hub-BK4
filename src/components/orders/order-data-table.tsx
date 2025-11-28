@@ -2,6 +2,12 @@
 
 import * as React from "react";
 import {
+  ColumnDef,
+  flexRender,
+  getCoreRowModel,
+  useReactTable,
+} from "@tanstack/react-table";
+import {
   Table,
   TableBody,
   TableCell,
@@ -24,7 +30,7 @@ import type { Order } from "@/lib/types";
 
 export function OrderDataTable() {
   const { orders } = useData();
-  const [filteredOrders, setFilteredOrders] = React.useState<Order[]>(orders);
+  const [data, setData] = React.useState<Order[]>(orders);
   const [filter, setFilter] = React.useState("");
   const [statusFilter, setStatusFilter] = React.useState("all");
 
@@ -43,8 +49,14 @@ export function OrderDataTable() {
         newFilteredOrders = newFilteredOrders.filter(order => order.status === statusFilter);
     }
 
-    setFilteredOrders(newFilteredOrders);
+    setData(newFilteredOrders);
   }, [filter, statusFilter, orders]);
+
+  const table = useReactTable({
+    data,
+    columns: orderColumns as ColumnDef<Order, unknown>[],
+    getCoreRowModel: getCoreRowModel(),
+  });
 
 
   return (
@@ -73,32 +85,42 @@ export function OrderDataTable() {
       </div>
       <div className="rounded-md border">
         <Table>
-          <TableHeader>
-            <TableRow>
-              {orderColumns.map((col) => (
-                <TableHead key={col.accessorKey}>{col.header}</TableHead>
-              ))}
-              <TableHead className="text-right">Hành động</TableHead>
-            </TableRow>
+           <TableHeader>
+            {table.getHeaderGroups().map((headerGroup) => (
+              <TableRow key={headerGroup.id}>
+                {headerGroup.headers.map((header) => {
+                  return (
+                    <TableHead key={header.id}>
+                      {header.isPlaceholder
+                        ? null
+                        : flexRender(
+                            header.column.columnDef.header,
+                            header.getContext()
+                          )}
+                    </TableHead>
+                  );
+                })}
+              </TableRow>
+            ))}
           </TableHeader>
           <TableBody>
-            {filteredOrders.length ? (
-              filteredOrders.map((order) => (
-                <TableRow key={order.id}>
-                  {orderColumns.map((col) => (
-                    <TableCell key={col.accessorKey}>
-                      {col.cell ? col.cell({ row: order }) : order[col.accessorKey as keyof Order]}
+            {table.getRowModel().rows?.length ? (
+              table.getRowModel().rows.map((row) => (
+                <TableRow
+                  key={row.id}
+                  data-state={row.getIsSelected() && "selected"}
+                >
+                  {row.getVisibleCells().map((cell) => (
+                    <TableCell key={cell.id}>
+                      {flexRender(cell.column.columnDef.cell, cell.getContext())}
                     </TableCell>
                   ))}
-                  <TableCell className="text-right">
-                    {orderColumns[orderColumns.length-1].cell!({ row: order })}
-                  </TableCell>
                 </TableRow>
               ))
             ) : (
               <TableRow>
                 <TableCell
-                  colSpan={orderColumns.length + 1}
+                  colSpan={orderColumns.length}
                   className="h-24 text-center"
                 >
                   Không tìm thấy kết quả.

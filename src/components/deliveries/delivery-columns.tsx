@@ -10,9 +10,9 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-  DropdownSub,
-  DropdownSubContent,
-  DropdownSubTrigger,
+  DropdownMenuSub,
+  DropdownMenuSubContent,
+  DropdownMenuSubTrigger,
   DropdownMenuPortal,
 } from "@/components/ui/dropdown-menu";
 import { Button } from "@/components/ui/button";
@@ -68,13 +68,13 @@ export const RowActions = ({ delivery }: { delivery: Delivery }) => {
         )}
 
         {isActionable && delivery.status !== "Needs Delivery" && (
-           <DropdownSub>
-            <DropdownSubTrigger>
+           <DropdownMenuSub>
+            <DropdownMenuSubTrigger>
               <Truck className="mr-2 h-4 w-4" />
               <span>Cập nhật trạng thái</span>
-            </DropdownSubTrigger>
+            </DropdownMenuSubTrigger>
             <DropdownMenuPortal>
-              <DropdownSubContent>
+              <DropdownMenuSubContent>
                 <DropdownMenuLabel>Chọn trạng thái mới</DropdownMenuLabel>
                 <DropdownMenuSeparator />
                 {Object.keys(statusConfig).map(status => (
@@ -82,9 +82,9 @@ export const RowActions = ({ delivery }: { delivery: Delivery }) => {
                     {statusConfig[status as DeliveryStatus].label}
                   </DropdownMenuItem>
                 ))}
-              </DropdownSubContent>
+              </DropdownMenuSubContent>
             </DropdownMenuPortal>
-          </DropdownSub>
+          </DropdownMenuSub>
         )}
         
         {delivery.status !== "Needs Delivery" && (
@@ -105,33 +105,33 @@ export const deliveryColumns = [
   {
     accessorKey: "id",
     header: "Mã Giao Hàng",
-    cell: ({ row }: { row: Delivery }) => <div className="font-medium">{row.id}</div>,
+    cell: ({ row }: { row: { original: Delivery } }) => <div className="font-medium">{row.original.id}</div>,
   },
   {
     accessorKey: "orderId",
     header: "Mã Đơn Hàng",
-    cell: ({ row }: { row: Delivery }) => row.order.id,
+    cell: ({ row }: { row: { original: Delivery } }) => row.original.order.id,
   },
   {
     accessorKey: "customer",
     header: "Khách hàng",
-    cell: ({ row }: { row: Delivery }) => row.order.customer.name,
+    cell: ({ row }: { row: { original: Delivery } }) => row.original.order.customer.name,
   },
   {
     accessorKey: "deliveryDateTime",
     header: "Ngày Giao",
-    cell: ({ row }: { row: Delivery }) => row.deliveryDateTime ? format(new Date(row.deliveryDateTime), "dd/MM/yyyy") : 'N/A',
+    cell: ({ row }: { row: { original: Delivery } }) => row.original.deliveryDateTime ? format(new Date(row.original.deliveryDateTime), "dd/MM/yyyy") : 'N/A',
   },
   {
     accessorKey: "driverName",
     header: "Tài xế",
-    cell: ({ row }: { row: Delivery }) => row.driverName || 'N/A',
+    cell: ({ row }: { row: { original: Delivery } }) => row.original.driverName || 'N/A',
   },
   {
     accessorKey: "status",
     header: "Trạng thái",
-    cell: ({ row }: { row: Delivery }) => {
-        const config = statusConfig[row.status];
+    cell: ({ row }: { row: { original: Delivery } }) => {
+        const config = statusConfig[row.original.status];
         return (
             <Badge variant={config.variant}>
               <config.icon className="mr-1 h-3 w-3" />
