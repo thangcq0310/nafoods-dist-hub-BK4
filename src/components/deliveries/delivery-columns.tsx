@@ -16,6 +16,7 @@ import { MoreHorizontal, Truck, Printer, Copy, CheckCircle, Clock, XCircle, Arro
 import { useData } from "@/hooks/use-data";
 import { useToast } from "@/hooks/use-toast";
 import { CreateDeliverySheet } from "./create-delivery-sheet";
+import { cn } from "@/lib/utils";
 
 const statusConfig: { [key in DeliveryStatus]: { variant: "default" | "secondary" | "destructive" | "outline", icon: React.ElementType } } = {
   "Cần giao": { variant: "outline", icon: Package },
@@ -107,7 +108,6 @@ export const deliveryColumns = [
     cell: ({ row }: { row: { original: Delivery } }) => (
         <div className="flex flex-col">
             <span className="font-medium">{row.original.order.id}</span>
-            <span className="text-xs text-muted-foreground">{row.original.id}</span>
         </div>
     ),
   },
