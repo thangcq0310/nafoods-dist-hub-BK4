@@ -63,6 +63,15 @@ export function CreateDeliverySheet({ orderId, trigger }: CreateDeliverySheetPro
   });
 
   function onSubmit(data: DeliveryFormValues) {
+     if (order?.status !== 'Confirmed') {
+      toast({
+        variant: "destructive",
+        title: "Không thể tạo lệnh",
+        description: "Chỉ có thể tạo lệnh giao hàng cho các đơn hàng đã được xác nhận.",
+      });
+      setOpen(false);
+      return;
+    }
     createDelivery({
       orderId,
       ...data,

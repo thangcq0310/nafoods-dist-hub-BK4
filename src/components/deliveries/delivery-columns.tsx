@@ -7,12 +7,10 @@ import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Button } from "@/components/ui/button";
-import { MoreHorizontal, Truck, Printer, Copy, CheckCircle, Clock, XCircle, ArrowRight, Package, Play, Ban } from "lucide-react";
+import { MoreHorizontal, Truck, Printer, CheckCircle, Clock, XCircle, ArrowRight, Package, Play, Ban } from "lucide-react";
 import { useData } from "@/hooks/use-data";
 import { useToast } from "@/hooks/use-toast";
 import { CreateDeliverySheet } from "./create-delivery-sheet";
@@ -27,8 +25,8 @@ const statusConfig: { [key in DeliveryStatus]: { variant: "default" | "secondary
   "Đã hủy": { variant: "destructive", icon: XCircle },
 };
 
-const ActionButton = ({ onClick, icon: Icon, label, className }: { onClick: () => void, icon: React.ElementType, label: string, className?: string }) => (
-    <Button onClick={onClick} variant="outline" size="sm" className={cn("h-8 gap-1", className)}>
+const ActionButton = ({ onClick, icon: Icon, label, className, ...props }: { onClick: () => void, icon: React.ElementType, label: string, className?: string } & React.ComponentProps<typeof Button>) => (
+    <Button onClick={onClick} variant="outline" size="sm" className={cn("h-8 gap-1", className)} {...props}>
         <Icon className="h-3.5 w-3.5" />
         <span className="sr-only sm:not-sr-only sm:whitespace-nowrap">{label}</span>
     </Button>
@@ -52,7 +50,7 @@ export const RowActions = ({ delivery }: { delivery: Delivery }) => {
         case "Cần giao":
             return (
                  <CreateDeliverySheet orderId={delivery.order.id} trigger={
-                    <Button size="sm" className="h-8 gap-1">
+                    <Button size="sm" className="h-8 gap-1" disabled={delivery.order.status !== 'Confirmed'}>
                         <ArrowRight className="h-3.5 w-3.5" />
                         <span className="sr-only sm:not-sr-only sm:whitespace-nowrap">Tạo lệnh giao</span>
                     </Button>
