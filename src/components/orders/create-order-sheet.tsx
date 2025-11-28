@@ -1,3 +1,4 @@
+
 "use client";
 
 import * as React from 'react';
@@ -18,6 +19,7 @@ import {
 import {
   Form,
   FormControl,
+  FormDescription,
   FormField,
   FormItem,
   FormLabel,
@@ -51,7 +53,7 @@ export function CreateOrderSheet() {
   const { customers, products, createOrder } = useData();
   const { toast } = useToast();
   const [selectedCustomerAddresses, setSelectedCustomerAddresses] = React.useState<Address[]>([]);
-
+  
   const form = useForm<OrderFormValues>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -68,6 +70,7 @@ export function CreateOrderSheet() {
   });
 
   const customerId = form.watch('customerId');
+  const addressId = form.watch('addressId');
 
   React.useEffect(() => {
     if (customerId) {
@@ -82,6 +85,10 @@ export function CreateOrderSheet() {
       form.setValue('addressId', '');
     }
   }, [customerId, customers, form]);
+  
+  const selectedAddress = React.useMemo(() => {
+    return selectedCustomerAddresses.find(a => a.id === addressId);
+  }, [selectedCustomerAddresses, addressId]);
 
   function onSubmit(data: OrderFormValues) {
     const customer = customers.find(c => c.id === data.customerId);
@@ -159,6 +166,9 @@ export function CreateOrderSheet() {
                         {selectedCustomerAddresses.map(a => <SelectItem key={a.id} value={a.id}>{a.street}, {a.city}</SelectItem>)}
                       </SelectContent>
                     </Select>
+                    {selectedAddress && (
+                        <FormDescription>SĐT Người nhận: {selectedAddress.phone}</FormDescription>
+                    )}
                     <FormMessage />
                   </FormItem>
                 )}
