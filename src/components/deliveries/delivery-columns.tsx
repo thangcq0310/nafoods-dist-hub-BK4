@@ -17,23 +17,23 @@ import { useToast } from "@/hooks/use-toast";
 import { CreateDeliverySheet } from "./create-delivery-sheet";
 import { cn } from "@/lib/utils";
 
-const deliveryStatusConfig: { [key in DeliveryStatus]: { variant: "default" | "secondary" | "destructive" | "outline", icon: React.ElementType } } = {
+const deliveryStatusConfig: { [key in DeliveryStatus]: { variant: "default" | "secondary" | "destructive" | "outline" | "accent", icon: React.ElementType } } = {
   "Cần giao": { variant: "outline", icon: Package },
-  "Chờ giao": { variant: "secondary", icon: Clock },
+  "Chờ giao": { variant: "accent", icon: Clock },
   "Đang giao": { variant: "default", icon: Truck },
   "Đã giao": { variant: "default", icon: CheckCircle },
   "Thất bại": { variant: "destructive", icon: XCircle },
   "Đã hủy": { variant: "destructive", icon: XCircle },
 };
 
-const orderStatusVariant: { [key in OrderStatus]: "default" | "secondary" | "destructive" } = {
+const orderStatusVariant: { [key in OrderStatus]: "default" | "secondary" | "destructive" | "accent" } = {
   "Confirmed": "default",
-  "Pending Approval": "secondary",
+  "Pending Approval": "accent",
   "Canceled": "destructive",
 };
 
 const ActionButton = ({ onClick, icon: Icon, label, className, ...props }: { onClick: () => void, icon: React.ElementType, label: string, className?: string } & React.ComponentProps<typeof Button>) => (
-    <Button onClick={onClick} variant="outline" size="sm" className={cn("h-8 gap-1", className)} {...props}>
+    <Button onClick={onClick} variant="outline" size="sm" className={cn("h-8 gap-1 bg-background text-foreground", className)} {...props}>
         <Icon className="h-3.5 w-3.5" />
         <span className="sr-only sm:not-sr-only sm:whitespace-nowrap">{label}</span>
     </Button>
@@ -70,7 +70,9 @@ const DeliveryStatusCell = ({ delivery }: { delivery: Delivery }) => {
 
     if (!nextStatuses.length) {
          return (
-            <Badge variant={config.variant} className="gap-1">
+            <Badge variant={config.variant} className={cn("gap-1", {
+              "bg-green-600/20 text-green-400 border-green-600/40": delivery.status === 'Đã giao'
+            })}>
               <config.icon className="h-3 w-3" />
               {delivery.status}
             </Badge>

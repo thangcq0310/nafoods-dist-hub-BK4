@@ -19,6 +19,7 @@ import {
 import { useData } from "@/hooks/use-data";
 import { vendorColumns } from "./vendor-columns";
 import type { Vendor } from "@/lib/types";
+import { Card } from "../ui/card";
 
 export function VendorDataTable() {
   const { vendors } = useData();
@@ -35,7 +36,7 @@ export function VendorDataTable() {
   });
 
   return (
-    <div className="space-y-4">
+    <Card className="p-4">
       <div className="rounded-md border">
         <Table>
            <TableHeader>
@@ -43,7 +44,7 @@ export function VendorDataTable() {
               <TableRow key={headerGroup.id}>
                 {headerGroup.headers.map((header) => {
                   return (
-                    <TableHead key={header.id}>
+                    <TableHead key={header.id} className="text-card-foreground">
                       {header.isPlaceholder
                         ? null
                         : flexRender(
@@ -62,6 +63,7 @@ export function VendorDataTable() {
                 <TableRow
                   key={row.id}
                   data-state={row.getIsSelected() && "selected"}
+                  className="[&_td]:text-card-foreground"
                 >
                   {row.getVisibleCells().map((cell) => (
                     <TableCell key={cell.id}>
@@ -74,7 +76,7 @@ export function VendorDataTable() {
               <TableRow>
                 <TableCell
                   colSpan={vendorColumns.length}
-                  className="h-24 text-center"
+                  className="h-24 text-center text-card-foreground"
                 >
                   Không tìm thấy kết quả.
                 </TableCell>
@@ -83,6 +85,6 @@ export function VendorDataTable() {
           </TableBody>
         </Table>
       </div>
-    </div>
+    </Card>
   );
 }

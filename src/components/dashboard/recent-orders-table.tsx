@@ -14,7 +14,7 @@ import { Badge } from "@/components/ui/badge";
 import type { OrderStatus } from "@/lib/types";
 import { format } from 'date-fns';
 
-const statusVariant: { [key in OrderStatus]: "default" | "secondary" | "destructive" } = {
+const statusVariant: { [key in OrderStatus]: "default" | "secondary" | "destructive" | "outline" } = {
   "Confirmed": "default",
   "Pending Approval": "secondary",
   "Canceled": "destructive",
@@ -33,18 +33,18 @@ export function RecentOrdersTable() {
         <Table>
           <TableHeader>
             <TableRow>
-              <TableHead>Mã Đơn</TableHead>
-              <TableHead>Khách Hàng</TableHead>
-              <TableHead>Ngày Đặt</TableHead>
-              <TableHead className="text-right">Trạng Thái</TableHead>
+              <TableHead className="text-card-foreground">Mã Đơn</TableHead>
+              <TableHead className="text-card-foreground">Khách Hàng</TableHead>
+              <TableHead className="text-card-foreground">Ngày Đặt</TableHead>
+              <TableHead className="text-right text-card-foreground">Trạng Thái</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
             {recentOrders.map((order) => (
               <TableRow key={order.id}>
-                <TableCell className="font-medium">{order.id}</TableCell>
-                <TableCell>{order.customer.name}</TableCell>
-                <TableCell>{format(new Date(order.orderDate), 'dd/MM/yyyy')}</TableCell>
+                <TableCell className="font-medium text-card-foreground">{order.id}</TableCell>
+                <TableCell className="text-card-foreground">{order.customer.name}</TableCell>
+                <TableCell className="text-card-foreground">{format(new Date(order.orderDate), 'dd/MM/yyyy')}</TableCell>
                 <TableCell className="text-right">
                    <Badge variant={statusVariant[order.status]}>{order.status}</Badge>
                 </TableCell>

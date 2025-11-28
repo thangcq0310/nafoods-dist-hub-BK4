@@ -19,6 +19,7 @@ import {
 import { useData } from "@/hooks/use-data";
 import { customerColumns } from "./customer-columns";
 import type { Customer } from "@/lib/types";
+import { Card } from "../ui/card";
 
 export function CustomerDataTable() {
   const { customers } = useData();
@@ -35,7 +36,7 @@ export function CustomerDataTable() {
   });
 
   return (
-    <div className="space-y-4">
+    <Card className="p-4">
       <div className="rounded-md border">
         <Table>
            <TableHeader>
@@ -43,7 +44,7 @@ export function CustomerDataTable() {
               <TableRow key={headerGroup.id}>
                 {headerGroup.headers.map((header) => {
                   return (
-                    <TableHead key={header.id}>
+                    <TableHead key={header.id} className="text-card-foreground">
                       {header.isPlaceholder
                         ? null
                         : flexRender(
@@ -62,6 +63,7 @@ export function CustomerDataTable() {
                 <TableRow
                   key={row.id}
                   data-state={row.getIsSelected() && "selected"}
+                  className="[&_td]:text-card-foreground"
                 >
                   {row.getVisibleCells().map((cell) => (
                     <TableCell key={cell.id}>
@@ -74,7 +76,7 @@ export function CustomerDataTable() {
               <TableRow>
                 <TableCell
                   colSpan={customerColumns.length}
-                  className="h-24 text-center"
+                  className="h-24 text-center text-card-foreground"
                 >
                   Không tìm thấy kết quả.
                 </TableCell>
@@ -83,6 +85,6 @@ export function CustomerDataTable() {
           </TableBody>
         </Table>
       </div>
-    </div>
+    </Card>
   );
 }

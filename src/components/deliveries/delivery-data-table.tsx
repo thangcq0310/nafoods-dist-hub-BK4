@@ -23,6 +23,7 @@ import { useData } from "@/hooks/use-data";
 import { deliveryColumns, RowActions } from "./delivery-columns";
 import { Input } from "@/components/ui/input";
 import type { Delivery, DeliveryStatus } from "@/lib/types";
+import { Card } from "../ui/card";
 
 interface DeliveryDataTableProps {
   statusFilter: DeliveryStatus[] | null;
@@ -61,7 +62,7 @@ export function DeliveryDataTable({ statusFilter }: DeliveryDataTableProps) {
     ...deliveryColumns,
     {
       id: "actions",
-      header: () => <div className="text-right">Hành động</div>,
+      header: () => <div className="text-right text-card-foreground">Hành động</div>,
       cell: ({ row }) => <RowActions delivery={row.original} />,
     },
   ]
@@ -78,13 +79,13 @@ export function DeliveryDataTable({ statusFilter }: DeliveryDataTableProps) {
   });
 
   return (
-    <div className="space-y-4">
-      <div className="flex items-center justify-between gap-4">
+    <Card className="p-4">
+      <div className="flex items-center justify-between gap-4 mb-4">
         <Input
           placeholder="Lọc theo mã đơn, mã giao, khách hàng, tài xế..."
           value={filter}
           onChange={(e) => setFilter(e.target.value)}
-          className="max-w-md"
+          className="max-w-md bg-background"
         />
       </div>
       <div className="rounded-md border">
@@ -94,7 +95,7 @@ export function DeliveryDataTable({ statusFilter }: DeliveryDataTableProps) {
               <TableRow key={headerGroup.id}>
                 {headerGroup.headers.map((header) => {
                   return (
-                    <TableHead key={header.id}>
+                    <TableHead key={header.id} className="text-card-foreground">
                       {header.isPlaceholder
                         ? null
                         : flexRender(
@@ -113,6 +114,7 @@ export function DeliveryDataTable({ statusFilter }: DeliveryDataTableProps) {
                 <TableRow
                   key={row.id}
                   data-state={row.getIsSelected() && "selected"}
+                  className="[&_td]:text-card-foreground"
                 >
                   {row.getVisibleCells().map((cell) => (
                     <TableCell key={cell.id}>
@@ -125,7 +127,7 @@ export function DeliveryDataTable({ statusFilter }: DeliveryDataTableProps) {
               <TableRow>
                 <TableCell
                   colSpan={columns.length}
-                  className="h-24 text-center"
+                  className="h-24 text-center text-card-foreground"
                 >
                   Không tìm thấy kết quả.
                 </TableCell>
@@ -134,6 +136,6 @@ export function DeliveryDataTable({ statusFilter }: DeliveryDataTableProps) {
           </TableBody>
         </Table>
       </div>
-    </div>
+    </Card>
   );
 }

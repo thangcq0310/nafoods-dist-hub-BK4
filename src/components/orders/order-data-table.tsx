@@ -27,6 +27,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import type { Order } from "@/lib/types";
+import { Card } from "../ui/card";
 
 export function OrderDataTable() {
   const { orders } = useData();
@@ -60,17 +61,17 @@ export function OrderDataTable() {
 
 
   return (
-    <div className="space-y-4">
-      <div className="flex items-center justify-between gap-4">
+    <Card className="p-4">
+      <div className="flex items-center justify-between gap-4 mb-4">
         <Input
           placeholder="Lọc theo mã đơn, khách hàng..."
           value={filter}
           onChange={(e) => setFilter(e.target.value)}
-          className="max-w-sm"
+          className="max-w-sm bg-background"
         />
         <div className="flex items-center gap-2">
            <Select value={statusFilter} onValueChange={setStatusFilter}>
-            <SelectTrigger className="w-[180px]">
+            <SelectTrigger className="w-[180px] bg-background">
               <SelectValue placeholder="Lọc trạng thái" />
             </SelectTrigger>
             <SelectContent>
@@ -90,7 +91,7 @@ export function OrderDataTable() {
               <TableRow key={headerGroup.id}>
                 {headerGroup.headers.map((header) => {
                   return (
-                    <TableHead key={header.id}>
+                    <TableHead key={header.id} className="text-card-foreground">
                       {header.isPlaceholder
                         ? null
                         : flexRender(
@@ -109,6 +110,7 @@ export function OrderDataTable() {
                 <TableRow
                   key={row.id}
                   data-state={row.getIsSelected() && "selected"}
+                  className="[&_td]:text-card-foreground"
                 >
                   {row.getVisibleCells().map((cell) => (
                     <TableCell key={cell.id}>
@@ -121,7 +123,7 @@ export function OrderDataTable() {
               <TableRow>
                 <TableCell
                   colSpan={orderColumns.length}
-                  className="h-24 text-center"
+                  className="h-24 text-center text-card-foreground"
                 >
                   Không tìm thấy kết quả.
                 </TableCell>
@@ -130,6 +132,6 @@ export function OrderDataTable() {
           </TableBody>
         </Table>
       </div>
-    </div>
+    </Card>
   );
 }
