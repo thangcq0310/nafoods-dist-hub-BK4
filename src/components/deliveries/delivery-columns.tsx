@@ -68,26 +68,25 @@ const DeliveryStatusCell = ({ delivery }: { delivery: Delivery }) => {
 
     const nextStatuses = getNextStatuses();
 
+    const badge = (
+        <Badge variant={config.variant} className={cn("w-[110px] justify-center gap-1", {
+            "bg-green-600/20 text-green-400 border-green-600/40": delivery.status === 'Đã giao'
+        }, !nextStatuses.length && "cursor-default")}>
+            <config.icon className="h-3 w-3" />
+            {delivery.status}
+            {!!nextStatuses.length && <MoreHorizontal className="ml-1 h-3 w-3" />}
+        </Badge>
+    );
+
     if (!nextStatuses.length) {
-         return (
-            <Badge variant={config.variant} className={cn("gap-1", {
-              "bg-green-600/20 text-green-400 border-green-600/40": delivery.status === 'Đã giao'
-            })}>
-              <config.icon className="h-3 w-3" />
-              {delivery.status}
-            </Badge>
-        );
+         return badge;
     }
 
     return (
         <DropdownMenu>
             <DropdownMenuTrigger asChild>
                 <Button variant="ghost" className="p-0 h-auto">
-                     <Badge variant={config.variant} className="gap-1 cursor-pointer">
-                        <config.icon className="h-3 w-3" />
-                        {delivery.status}
-                        <MoreHorizontal className="ml-1 h-3 w-3" />
-                    </Badge>
+                    {badge}
                 </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="start">
