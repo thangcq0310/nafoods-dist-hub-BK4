@@ -2,10 +2,11 @@ import Link from "next/link";
 import { MainNav } from "./main-nav";
 import { MobileNav } from "./mobile-nav";
 import { Truck } from "lucide-react";
+import { cn } from "@/lib/utils";
 
 export function AppHeader() {
   return (
-    <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+    <header className={cn("sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60", "dark:bg-slate-900/95 dark:backdrop-blur dark:supports-[backdrop-filter]:bg-slate-900/60")}>
       <div className="container flex h-16 items-center">
         <Link href="/dashboard" className="mr-6 flex items-center gap-2">
           <Truck className="h-6 w-6 text-primary" />

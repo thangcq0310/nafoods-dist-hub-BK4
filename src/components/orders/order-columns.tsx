@@ -12,31 +12,19 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Button } from "@/components/ui/button";
-import { MoreHorizontal, Check, X } from "lucide-react";
+import { MoreHorizontal, Check, X, Clipboard, Ban } from "lucide-react";
 import { useData } from "@/hooks/use-data";
 import { useToast } from "@/hooks/use-toast";
+import { cn } from "@/lib/utils";
 
-const statusVariant: { [key in OrderStatus]: "default" | "secondary" | "destructive" } = {
+
+const statusConfig: { [key in OrderStatus]: { variant: "default" | "secondary" | "destructive" } } = {
   "Confirmed": "default",
   "Pending Approval": "secondary",
   "Canceled": "destructive",
 };
 
-const RowActions = ({ order }: { order: Order }) => {
-  const { updateOrderStatus } = useData();
-  const { toast } = useToast();
-
-  const handleConfirm = () => {
-    updateOrderStatus(order.id, "Confirmed");
-    toast({ title: "Thành công", description: `Đơn hàng ${order.id} đã được xác nhận.` });
-  };
-  
-  const handleCancel = () => {
-    updateOrderStatus(order.id, "Canceled");
-    toast({ title: "Thông báo", description: `Đơn hàng ${order.id} đã được hủy.`, variant: 'destructive' });
-  };
-
-
+const RowActions = ({ order }: { order: { id: string } }) => {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
@@ -48,25 +36,79 @@ const RowActions = ({ order }: { order: Order }) => {
       <DropdownMenuContent align="end">
         <DropdownMenuLabel>Hành động</DropdownMenuLabel>
         <DropdownMenuItem onClick={() => navigator.clipboard.writeText(order.id)}>
+          <Clipboard className="mr-2 h-4 w-4" />
           Sao chép mã đơn
         </DropdownMenuItem>
-        <DropdownMenuSeparator />
-        {order.status === "Pending Approval" && (
-          <DropdownMenuItem onClick={handleConfirm}>
-            <Check className="mr-2 h-4 w-4" />
-            Xác nhận
-          </DropdownMenuItem>
-        )}
-        {order.status !== "Canceled" && (
-           <DropdownMenuItem className="text-destructive" onClick={handleCancel}>
-            <X className="mr-2 h-4 w-4" />
-            Hủy đơn
-          </DropdownMenuItem>
-        )}
       </DropdownMenuContent>
     </DropdownMenu>
   );
 };
+
+const StatusCell = ({ order }: { order: Order }) => {
+  const { updateOrderStatus } = useData();
+  const { toast } = useToast();
+  const config = statusConfig[order.status];
+
+  const handleStatusUpdate = (newStatus: OrderStatus) => {
+    updateOrderStatus(order.id, newStatus);
+    toast({
+      title: "Cập nhật thành công",
+      description: `Trạng thái đơn hàng đã đổi thành "${newStatus}".`,
+    });
+  };
+
+  const getNextStatuses = (): { status: OrderStatus; label: string; icon: React.ElementType; isDestructive?: boolean }[] => {
+    switch (order.status) {
+      case "Pending Approval":
+        return [
+          { status: 'Confirmed', label: 'Xác nhận đơn hàng', icon: Check },
+          { status: 'Canceled', label: 'Hủy đơn hàng', icon: Ban, isDestructive: true },
+        ];
+      case "Confirmed":
+         return [
+          { status: 'Canceled', label: 'Hủy đơn hàng', icon: Ban, isDestructive: true },
+        ];
+      default:
+        return [];
+    }
+  };
+
+  const nextStatuses = getNextStatuses();
+
+  const badge = (
+    <Badge variant={config.variant} className="gap-1 w-[150px] justify-center">
+      {order.status}
+      {nextStatuses.length > 0 && <MoreHorizontal className="ml-1 h-3 w-3" />}
+    </Badge>
+  );
+
+  if (!nextStatuses.length) {
+    return badge;
+  }
+
+  return (
+    <DropdownMenu>
+      <DropdownMenuTrigger asChild>
+        <Button variant="ghost" className="p-0 h-auto">
+          {badge}
+        </Button>
+      </DropdownMenuTrigger>
+      <DropdownMenuContent align="start">
+        {nextStatuses.map(({ status, label, icon: Icon, isDestructive }) => (
+          <DropdownMenuItem
+            key={status}
+            onClick={() => handleStatusUpdate(status)}
+            className={cn(isDestructive && "text-destructive")}
+          >
+            <Icon className="mr-2 h-4 w-4" />
+            {label}
+          </DropdownMenuItem>
+        ))}
+      </DropdownMenuContent>
+    </DropdownMenu>
+  );
+};
+
 
 export const orderColumns = [
   {
@@ -97,9 +139,7 @@ export const orderColumns = [
   {
     accessorKey: "status",
     header: "Trạng thái",
-    cell: ({ row }: { row: { original: Order } }) => (
-      <Badge variant={statusVariant[row.original.status]}>{row.original.status}</Badge>
-    ),
+    cell: ({ row }: { row: { original: Order } }) => <StatusCell order={row.original} />,
   },
   {
     id: "actions",
