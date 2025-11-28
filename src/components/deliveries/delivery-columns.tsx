@@ -10,7 +10,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Button } from "@/components/ui/button";
-import { MoreHorizontal, Truck, Printer, CheckCircle, Clock, XCircle, ArrowRight, Package, Play, Ban } from "lucide-react";
+import { MoreHorizontal, Truck, Printer, CheckCircle, Clock, XCircle, ArrowRight, Package, Ban, Play } from "lucide-react";
 import { useData } from "@/hooks/use-data";
 import { useToast } from "@/hooks/use-toast";
 import { CreateDeliverySheet } from "./create-delivery-sheet";
@@ -32,15 +32,69 @@ const ActionButton = ({ onClick, icon: Icon, label, className, ...props }: { onC
     </Button>
 );
 
-export const RowActions = ({ delivery }: { delivery: Delivery }) => {
-  const { updateDeliveryStatus } = useData();
-  const { toast } = useToast();
+const StatusCell = ({ delivery }: { delivery: Delivery }) => {
+    const { updateDeliveryStatus } = useData();
+    const { toast } = useToast();
+    const config = statusConfig[delivery.status];
 
-  const handleStatusUpdate = (status: DeliveryStatus) => {
-    updateDeliveryStatus(delivery.id, status);
-    toast({ title: "Cập nhật thành công", description: `Trạng thái giao hàng đã đổi thành "${status}".` });
-  };
-  
+    const handleStatusUpdate = (newStatus: DeliveryStatus) => {
+        updateDeliveryStatus(delivery.id, newStatus);
+        toast({ title: "Cập nhật thành công", description: `Trạng thái giao hàng đã đổi thành "${newStatus}".` });
+    };
+
+    const getNextStatuses = (): { status: DeliveryStatus, label: string, icon: React.ElementType, isDestructive?: boolean }[] => {
+        switch (delivery.status) {
+            case "Chờ giao":
+                return [
+                    { status: 'Đang giao', label: 'Bắt đầu giao', icon: Play },
+                    { status: 'Đã hủy', label: 'Hủy lệnh', icon: Ban, isDestructive: true },
+                ];
+            case "Đang giao":
+                return [
+                    { status: 'Đã giao', label: 'Đã giao thành công', icon: CheckCircle },
+                    { status: 'Thất bại', label: 'Báo thất bại', icon: XCircle, isDestructive: true },
+                ];
+            default:
+                return [];
+        }
+    }
+
+    const nextStatuses = getNextStatuses();
+
+    if (!nextStatuses.length) {
+         return (
+            <Badge variant={config.variant} className="gap-1">
+              <config.icon className="h-3 w-3" />
+              {delivery.status}
+            </Badge>
+        );
+    }
+
+    return (
+        <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+                <Button variant="ghost" className="p-0 h-auto">
+                     <Badge variant={config.variant} className="gap-1 cursor-pointer">
+                        <config.icon className="h-3 w-3" />
+                        {delivery.status}
+                        <MoreHorizontal className="ml-1 h-3 w-3" />
+                    </Badge>
+                </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="start">
+                {nextStatuses.map(({ status, label, icon: Icon, isDestructive }) => (
+                     <DropdownMenuItem key={status} onClick={() => handleStatusUpdate(status)} className={cn(isDestructive && 'text-destructive')}>
+                        <Icon className="mr-2 h-4 w-4" />
+                        {label}
+                    </DropdownMenuItem>
+                ))}
+            </DropdownMenuContent>
+        </DropdownMenu>
+    );
+};
+
+
+export const RowActions = ({ delivery }: { delivery: Delivery }) => {
   const handlePrint = () => {
     window.open(`/print/delivery/${delivery.id}`, '_blank');
   };
@@ -57,35 +111,7 @@ export const RowActions = ({ delivery }: { delivery: Delivery }) => {
                 } />
             );
         case "Chờ giao":
-            return (
-                <div className="flex items-center gap-2">
-                    <ActionButton onClick={() => handleStatusUpdate('Đang giao')} icon={Play} label="Bắt đầu giao" />
-                    <DropdownMenu>
-                        <DropdownMenuTrigger asChild>
-                            <Button variant="ghost" className="h-8 w-8 p-0"><MoreHorizontal className="h-4 w-4" /></Button>
-                        </DropdownMenuTrigger>
-                        <DropdownMenuContent align="end">
-                           <DropdownMenuItem onClick={handlePrint}><Printer className="mr-2 h-4 w-4" /> In phiếu</DropdownMenuItem>
-                           <DropdownMenuItem onClick={() => handleStatusUpdate('Đã hủy')} className="text-destructive"><Ban className="mr-2 h-4 w-4" /> Hủy lệnh</DropdownMenuItem>
-                        </DropdownMenuContent>
-                    </DropdownMenu>
-                </div>
-            );
         case "Đang giao":
-            return (
-                <div className="flex items-center gap-2">
-                    <ActionButton onClick={() => handleStatusUpdate('Đã giao')} icon={CheckCircle} label="Đã giao" />
-                    <DropdownMenu>
-                        <DropdownMenuTrigger asChild>
-                            <Button variant="ghost" className="h-8 w-8 p-0"><MoreHorizontal className="h-4 w-4" /></Button>
-                        </DropdownMenuTrigger>
-                        <DropdownMenuContent align="end">
-                           <DropdownMenuItem onClick={handlePrint}><Printer className="mr-2 h-4 w-4" /> In phiếu</DropdownMenuItem>
-                           <DropdownMenuItem onClick={() => handleStatusUpdate('Thất bại')} className="text-destructive"><XCircle className="mr-2 h-4 w-4" /> Báo thất bại</DropdownMenuItem>
-                        </DropdownMenuContent>
-                    </DropdownMenu>
-                </div>
-            );
         case "Đã giao":
         case "Thất bại":
         case "Đã hủy":
@@ -127,14 +153,6 @@ export const deliveryColumns = [
   {
     accessorKey: "status",
     header: "Trạng thái",
-    cell: ({ row }: { row: { original: Delivery } }) => {
-        const config = statusConfig[row.original.status];
-        return (
-            <Badge variant={config.variant} className="gap-1">
-              <config.icon className="h-3 w-3" />
-              {row.original.status}
-            </Badge>
-        )
-    },
+    cell: ({ row }: { row: { original: Delivery } }) => <StatusCell delivery={row.original} />,
   },
 ];
