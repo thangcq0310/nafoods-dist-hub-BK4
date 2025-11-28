@@ -10,7 +10,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Button } from "@/components/ui/button";
-import { Check, Ban } from "lucide-react";
+import { Check, Ban, MoreHorizontal } from "lucide-react";
 import { useData } from "@/hooks/use-data";
 import { useToast } from "@/hooks/use-toast";
 import { cn } from "@/lib/utils";
@@ -54,7 +54,7 @@ const StatusCell = ({ order }: { order: Order }) => {
   const nextStatuses = getNextStatuses();
 
   const badge = (
-    <Badge variant={config.variant} className="gap-1 w-[150px] justify-center cursor-pointer">
+    <Badge variant={config.variant} className="w-[150px] justify-center">
       {order.status}
     </Badge>
   );
@@ -66,7 +66,9 @@ const StatusCell = ({ order }: { order: Order }) => {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        {badge}
+         <Button variant={config.variant} className="w-[150px] justify-center">
+            {order.status}
+        </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="start">
         {nextStatuses.map(({ status, label, icon: Icon, isDestructive }) => (
