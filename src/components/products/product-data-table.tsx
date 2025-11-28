@@ -36,7 +36,7 @@ export function ProductDataTable() {
   });
 
   return (
-    <Card className="p-4">
+    <Card className="p-4 bg-card">
       <div className="rounded-md border">
         <Table>
            <TableHeader>
