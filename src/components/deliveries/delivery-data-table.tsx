@@ -6,6 +6,8 @@ import {
   flexRender,
   getCoreRowModel,
   useReactTable,
+  getSortedRowModel,
+  type SortingState,
 } from "@tanstack/react-table";
 
 import {
@@ -29,6 +31,9 @@ export function DeliveryDataTable({ statusFilter }: DeliveryDataTableProps) {
   const { deliveries } = useData();
   const [data, setData] = React.useState<Delivery[]>([]);
   const [filter, setFilter] = React.useState("");
+  const [sorting, setSorting] = React.useState<SortingState>([
+    { id: 'orderId', desc: true }
+  ]);
 
   React.useEffect(() => {
     let newFilteredDeliveries = deliveries;
@@ -41,6 +46,7 @@ export function DeliveryDataTable({ statusFilter }: DeliveryDataTableProps) {
       newFilteredDeliveries = newFilteredDeliveries.filter(
         (delivery) =>
           delivery.order.id.toLowerCase().includes(filter.toLowerCase()) ||
+          delivery.id.toLowerCase().includes(filter.toLowerCase()) ||
           delivery.order.customer.name.toLowerCase().includes(filter.toLowerCase()) ||
           delivery.driverName?.toLowerCase().includes(filter.toLowerCase()) ||
           delivery.vehicleNumber?.toLowerCase().includes(filter.toLowerCase())
@@ -54,6 +60,7 @@ export function DeliveryDataTable({ statusFilter }: DeliveryDataTableProps) {
     ...deliveryColumns,
     {
       id: "actions",
+      header: () => <div className="text-right">Hành động</div>,
       cell: ({ row }) => <RowActions delivery={row.original} />,
     },
   ]
@@ -62,13 +69,18 @@ export function DeliveryDataTable({ statusFilter }: DeliveryDataTableProps) {
     data,
     columns,
     getCoreRowModel: getCoreRowModel(),
+    onSortingChange: setSorting,
+    getSortedRowModel: getSortedRowModel(),
+    state: {
+        sorting,
+    }
   });
 
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-between gap-4">
         <Input
-          placeholder="Lọc theo mã đơn, khách hàng, tài xế..."
+          placeholder="Lọc theo mã đơn, mã giao, khách hàng, tài xế..."
           value={filter}
           onChange={(e) => setFilter(e.target.value)}
           className="max-w-md"
