@@ -97,11 +97,6 @@ export const orderColumns = [
     cell: ({ row }: { row: { original: Order } }) => row.original.customer.name,
   },
   {
-    accessorKey: "shippingAddress",
-    header: "Địa chỉ",
-    cell: ({ row }: { row: { original: Order } }) => `${row.original.shippingAddress.street}, ${row.original.shippingAddress.city}`,
-  },
-  {
     accessorKey: "orderDate",
     header: "Ngày đặt",
     cell: ({ row }: { row: { original: Order } }) => format(new Date(row.original.orderDate), "dd/MM/yyyy"),
@@ -110,6 +105,14 @@ export const orderColumns = [
     accessorKey: "deliveryDate",
     header: "Ngày giao",
     cell: ({ row }: { row: { original: Order } }) => format(new Date(row.original.deliveryDate), "dd/MM/yyyy"),
+  },
+   {
+    accessorKey: "confirmationDate",
+    header: "Thời gian xác nhận",
+    cell: ({ row }: { row: { original: Order } }) => 
+      row.original.confirmationDate 
+        ? format(new Date(row.original.confirmationDate), "dd/MM/yyyy HH:mm") 
+        : 'N/A',
   },
   {
     accessorKey: "status",

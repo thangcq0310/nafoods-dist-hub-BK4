@@ -42,17 +42,19 @@ const generateOrders = (): Order[] => {
   let orders: Order[] = [];
   for (let i = 1; i <= 25; i++) {
     const customer = customers[i % customers.length];
+    const status = i > 20 ? 'Pending Approval' : (i < 5 ? 'Canceled' : 'Confirmed');
     orders.push({
       id: `DH-${String(i).padStart(5, '0')}`,
       customer: customer,
       shippingAddress: customer.addresses[0],
       orderDate: formatISO(subDays(new Date(), Math.floor(i/2))),
       deliveryDate: formatISO(subDays(new Date(), Math.floor(i/2) - 2)),
+      confirmationDate: status === 'Confirmed' ? formatISO(subDays(new Date(), Math.floor(i/2) - 1)) : undefined,
       items: [
-        { product: products[i % products.length], quantity: i * 2, unit: 'Thùng' },
+        { product: products[i % products.length], quantity: i * 2, unit: 'Box' },
         ...(i % 2 === 0 ? [{ product: products[(i + 1) % products.length], quantity: i + 5, unit: 'Kg' as 'Kg' }] : [])
       ],
-      status: i > 20 ? 'Pending Approval' : (i < 5 ? 'Canceled' : 'Confirmed'),
+      status: status,
     });
   }
   return orders;

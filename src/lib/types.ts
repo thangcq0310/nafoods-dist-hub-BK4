@@ -44,6 +44,7 @@ export type Order = {
   shippingAddress: Address;
   orderDate: string; // ISO string
   deliveryDate: string; // ISO string
+  confirmationDate?: string; // ISO string
   items: OrderItem[];
   status: OrderStatus;
 };

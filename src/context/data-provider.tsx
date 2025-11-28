@@ -38,9 +38,16 @@ export function DataProvider({ children }: { children: ReactNode }) {
 
   const updateOrderStatus = useCallback((orderId: string, status: OrderStatus) => {
     setOrders(prevOrders =>
-      prevOrders.map(order =>
-        order.id === orderId ? { ...order, status } : order
-      )
+      prevOrders.map(order => {
+        if (order.id === orderId) {
+          const updatedOrder = { ...order, status };
+          if (status === 'Confirmed') {
+            updatedOrder.confirmationDate = new Date().toISOString();
+          }
+          return updatedOrder;
+        }
+        return order;
+      })
     );
 
     // If an order is confirmed, it needs a delivery record
