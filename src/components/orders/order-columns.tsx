@@ -116,7 +116,7 @@ export const orderColumns = [
   },
   {
     accessorKey: "status",
-    header: "Trạng thái",
-    cell: ({ row }: { row: { original: Order } }) => <StatusCell order={row.original} />,
+    header: () => <div className="text-center">Trạng thái</div>,
+    cell: ({ row }: { row: { original: Order } }) => <div className="text-center"><StatusCell order={row.original} /></div>,
   },
 ];
