@@ -6,7 +6,7 @@ import { cn } from "@/lib/utils";
 
 export function AppHeader() {
   return (
-    <header className={cn("sticky top-0 z-50 w-full border-b bg-slate-900/95 text-slate-50 backdrop-blur supports-[backdrop-filter]:bg-slate-900/60")}>
+    <header className={cn("sticky top-0 z-50 w-full border-b bg-slate-100 text-slate-900")}>
       <div className="container flex h-16 items-center">
         <div className="flex items-center">
           <Link href="/dashboard" className="mr-6 flex items-center gap-2">
