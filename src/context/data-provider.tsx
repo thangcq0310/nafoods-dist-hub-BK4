@@ -22,6 +22,9 @@ export interface DataContextType {
   updateDeliveryStatus: (deliveryId: string, status: DeliveryStatus) => void;
   createOrder: (newOrder: Omit<Order, 'id' | 'orderDate'>) => void;
   createDelivery: (newDeliveryData: { orderId: string, vendorId: string, deliveryDateTime: string, driverName: string, driverPhone: string, vehicleNumber: string }) => void;
+  createProduct: (newProduct: Omit<Product, 'id'>) => void;
+  createCustomer: (newCustomer: Omit<Customer, 'id'>) => void;
+  createVendor: (newVendor: Omit<Vendor, 'id'>) => void;
 }
 
 export const DataContext = createContext<DataContextType | null>(null);
@@ -59,7 +62,7 @@ export function DataProvider({ children }: { children: ReactNode }) {
     // If an order is canceled, cancel the corresponding delivery
     if (status === 'Canceled') {
       const deliveryToCancel = deliveries.find(d => d.order.id === orderId);
-      if (deliveryToCancel) {
+      if (deliveryToCancel && deliveryToCancel.status !== 'Đã giao' && deliveryToCancel.status !== 'Thất bại') {
         setDeliveries(prevDeliveries =>
           prevDeliveries.map(delivery =>
             delivery.id === deliveryToCancel.id ? { ...delivery, status: 'Đã hủy' } : delivery
@@ -106,6 +109,30 @@ export function DataProvider({ children }: { children: ReactNode }) {
     );
   }, [vendors]);
 
+  const createProduct = useCallback((newProductData: Omit<Product, 'id'>) => {
+    const newProduct: Product = {
+      ...newProductData,
+      id: `P-${String(products.length + 1).padStart(3, '0')}`,
+    };
+    setProducts(prev => [newProduct, ...prev]);
+  }, [products.length]);
+
+  const createCustomer = useCallback((newCustomerData: Omit<Customer, 'id'>) => {
+    const newCustomer: Customer = {
+      ...newCustomerData,
+      id: `C-${String(customers.length + 1).padStart(3, '0')}`,
+    };
+    setCustomers(prev => [newCustomer, ...prev]);
+  }, [customers.length]);
+
+  const createVendor = useCallback((newVendorData: Omit<Vendor, 'id'>) => {
+    const newVendor: Vendor = {
+      ...newVendorData,
+      id: `V-${String(vendors.length + 1).padStart(3, '0')}`,
+    };
+    setVendors(prev => [newVendor, ...prev]);
+  }, [vendors.length]);
+
   const value = {
     orders,
     deliveries,
@@ -116,6 +143,9 @@ export function DataProvider({ children }: { children: ReactNode }) {
     updateDeliveryStatus,
     createOrder,
     createDelivery,
+    createProduct,
+    createCustomer,
+    createVendor,
   };
 
   return <DataContext.Provider value={value}>{children}</DataContext.Provider>;
