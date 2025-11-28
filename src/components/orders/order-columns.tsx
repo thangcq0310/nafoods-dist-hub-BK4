@@ -54,22 +54,20 @@ const StatusCell = ({ order }: { order: Order }) => {
 
   const nextStatuses = getNextStatuses();
 
-  const badge = (
-    <Badge variant={config.variant} className="w-[150px] justify-center">
-      {order.status}
-    </Badge>
+  const button = (
+    <Button variant={config.variant} className="w-[150px] justify-center" disabled={!nextStatuses.length}>
+        {order.status}
+    </Button>
   );
 
   if (!nextStatuses.length) {
-    return badge;
+    return button;
   }
 
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-         <Button variant={config.variant} className="w-[150px] justify-center">
-            {order.status}
-        </Button>
+        {button}
       </DropdownMenuTrigger>
       <DropdownMenuContent align="start">
         {nextStatuses.map(({ status, label, icon: Icon, isDestructive }) => (
