@@ -1,0 +1,87 @@
+"use client";
+
+import { useData } from "@/hooks/use-data";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Truck,
+  Package,
+  Clock,
+  CheckCircle,
+  XCircle,
+  Archive,
+} from "lucide-react";
+import { isToday } from 'date-fns';
+
+type Kpi = {
+  title: string;
+  value: number;
+  icon: React.ElementType;
+  description: string;
+};
+
+export function KpiCards() {
+  const { deliveries } = useData();
+
+  const needsDelivery = deliveries.filter(d => d.status === "Needs Delivery").length;
+  const waitingForPickup = deliveries.filter(d => d.status === "Waiting for Pickup").length;
+  const inTransit = deliveries.filter(d => d.status === "In Transit").length;
+  const completedToday = deliveries.filter(d => d.status === "Delivered" && d.deliveryDateTime && isToday(new Date(d.deliveryDateTime))).length;
+  const failedOrCanceled = deliveries.filter(d => d.status === "Failed" || d.status === "Canceled").length;
+  const totalDelivered = deliveries.filter(d => d.status === "Delivered").length;
+  
+  const kpis: Kpi[] = [
+    {
+      title: "Cần Giao Hàng",
+      value: needsDelivery,
+      icon: Package,
+      description: "Đơn hàng đã xác nhận, chờ tạo lệnh giao.",
+    },
+    {
+      title: "Chờ Giao Hàng",
+      value: waitingForPickup,
+      icon: Clock,
+      description: "Lệnh giao đã tạo, chờ nhà vận tải lấy hàng.",
+    },
+    {
+      title: "Đang Vận Chuyển",
+      value: inTransit,
+      icon: Truck,
+      description: "Đơn hàng đang trên đường giao.",
+    },
+    {
+      title: "Hoàn Thành Hôm Nay",
+      value: completedToday,
+      icon: CheckCircle,
+      description: "Đơn hàng đã giao thành công trong ngày.",
+    },
+    {
+      title: "Thất Bại / Đã Hủy",
+      value: failedOrCanceled,
+      icon: XCircle,
+      description: "Đơn hàng giao thất bại hoặc đã bị hủy.",
+    },
+    {
+      title: "Tổng Đơn Đã Giao",
+      value: totalDelivered,
+      icon: Archive,
+      description: "Tổng số đơn hàng đã giao thành công.",
+    },
+  ];
+
+  return (
+    <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+      {kpis.map((kpi) => (
+        <Card key={kpi.title}>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">{kpi.title}</CardTitle>
+            <kpi.icon className="h-4 w-4 text-muted-foreground" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">{kpi.value}</div>
+            <p className="text-xs text-muted-foreground">{kpi.description}</p>
+          </CardContent>
+        </Card>
+      ))}
+    </div>
+  );
+}
