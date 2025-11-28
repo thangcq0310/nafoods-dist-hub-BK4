@@ -12,7 +12,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Button } from "@/components/ui/button";
-import { MoreHorizontal, Check, X, Clipboard, Ban } from "lucide-react";
+import { MoreHorizontal, Check, Clipboard, Ban } from "lucide-react";
 import { useData } from "@/hooks/use-data";
 import { useToast } from "@/hooks/use-toast";
 import { cn } from "@/lib/utils";
@@ -78,7 +78,6 @@ const StatusCell = ({ order }: { order: Order }) => {
   const badge = (
     <Badge variant={config.variant} className="gap-1 w-[150px] justify-center">
       {order.status}
-      {nextStatuses.length > 0 && <MoreHorizontal className="ml-1 h-3 w-3" />}
     </Badge>
   );
 
