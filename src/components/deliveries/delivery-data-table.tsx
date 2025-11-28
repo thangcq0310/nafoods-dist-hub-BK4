@@ -85,7 +85,7 @@ export function DeliveryDataTable({ statusFilter }: DeliveryDataTableProps) {
           placeholder="Lọc theo mã đơn, mã giao, khách hàng, tài xế..."
           value={filter}
           onChange={(e) => setFilter(e.target.value)}
-          className="max-w-md bg-background"
+          className="max-w-md"
         />
       </div>
       <div className="rounded-md border">

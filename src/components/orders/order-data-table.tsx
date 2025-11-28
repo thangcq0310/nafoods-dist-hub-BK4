@@ -1,3 +1,4 @@
+
 "use client";
 
 import * as React from "react";
@@ -67,11 +68,11 @@ export function OrderDataTable() {
           placeholder="Lọc theo mã đơn, khách hàng..."
           value={filter}
           onChange={(e) => setFilter(e.target.value)}
-          className="max-w-sm bg-background"
+          className="max-w-sm"
         />
         <div className="flex items-center gap-2">
            <Select value={statusFilter} onValueChange={setStatusFilter}>
-            <SelectTrigger className="w-[180px] bg-background">
+            <SelectTrigger className="w-[180px]">
               <SelectValue placeholder="Lọc trạng thái" />
             </SelectTrigger>
             <SelectContent>
