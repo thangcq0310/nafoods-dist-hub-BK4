@@ -6,11 +6,11 @@ import type { DeliveryStatus } from "@/lib/types";
 
 const deliveryTabs: { value: DeliveryStatus | 'all', label: string }[] = [
     { value: 'all', label: 'Tất cả' },
-    { value: 'Needs Delivery', label: 'Cần giao' },
-    { value: 'Waiting for Pickup', label: 'Chờ giao' },
-    { value: 'In Transit', label: 'Đang vận chuyển' },
-    { value: 'Delivered', label: 'Đã giao' },
-    { value: 'Failed', label: 'Lỗi/Hủy' },
+    { value: 'Cần giao', label: 'Cần giao' },
+    { value: 'Chờ giao', label: 'Chờ giao' },
+    { value: 'Đang giao', label: 'Đang giao' },
+    { value: 'Đã giao', label: 'Đã giao' },
+    { value: 'Thất bại', label: 'Lỗi/Hủy' },
 ];
 
 export default function DeliveriesPage() {
@@ -26,7 +26,7 @@ export default function DeliveriesPage() {
           </TabsList>
           {deliveryTabs.map(tab => (
             <TabsContent key={tab.value} value={tab.value} className="space-y-4">
-                <DeliveryDataTable statusFilter={tab.value === 'Failed' ? ['Failed', 'Canceled'] : tab.value === 'all' ? null : [tab.value]}/>
+                <DeliveryDataTable statusFilter={tab.value === 'Thất bại' ? ['Thất bại', 'Đã hủy'] : tab.value === 'all' ? null : [tab.value]}/>
             </TabsContent>
           ))}
         </Tabs>

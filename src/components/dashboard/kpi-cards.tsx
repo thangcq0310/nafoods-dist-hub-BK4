@@ -22,12 +22,12 @@ type Kpi = {
 export function KpiCards() {
   const { deliveries } = useData();
 
-  const needsDelivery = deliveries.filter(d => d.status === "Needs Delivery").length;
-  const waitingForPickup = deliveries.filter(d => d.status === "Waiting for Pickup").length;
-  const inTransit = deliveries.filter(d => d.status === "In Transit").length;
-  const completedToday = deliveries.filter(d => d.status === "Delivered" && d.deliveryDateTime && isToday(new Date(d.deliveryDateTime))).length;
-  const failedOrCanceled = deliveries.filter(d => d.status === "Failed" || d.status === "Canceled").length;
-  const totalDelivered = deliveries.filter(d => d.status === "Delivered").length;
+  const needsDelivery = deliveries.filter(d => d.status === "Cần giao").length;
+  const waitingForPickup = deliveries.filter(d => d.status === "Chờ giao").length;
+  const inTransit = deliveries.filter(d => d.status === "Đang giao").length;
+  const completedToday = deliveries.filter(d => d.status === "Đã giao" && d.deliveryDateTime && isToday(new Date(d.deliveryDateTime))).length;
+  const failedOrCanceled = deliveries.filter(d => d.status === "Thất bại" || d.status === "Đã hủy").length;
+  const totalDelivered = deliveries.filter(d => d.status === "Đã giao").length;
   
   const kpis: Kpi[] = [
     {

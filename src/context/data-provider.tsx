@@ -47,7 +47,7 @@ export function DataProvider({ children }: { children: ReactNode }) {
           const newDelivery: Delivery = {
             id: `GH-${String(deliveries.length + 1).padStart(5, '0')}`,
             order,
-            status: 'Needs Delivery',
+            status: 'Cần giao',
           };
           setDeliveries(prev => [...prev, newDelivery]);
         }
@@ -84,7 +84,7 @@ export function DataProvider({ children }: { children: ReactNode }) {
             driverName: newDeliveryData.driverName,
             driverPhone: newDeliveryData.driverPhone,
             vehicleNumber: newDeliveryData.vehicleNumber,
-            status: 'Waiting for Pickup' as DeliveryStatus,
+            status: 'Chờ giao' as DeliveryStatus,
           };
         }
         return delivery;

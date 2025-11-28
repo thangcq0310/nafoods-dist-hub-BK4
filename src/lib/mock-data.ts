@@ -64,11 +64,11 @@ const generateDeliveries = (orders: Order[]): Delivery[] => {
   let deliveries: Delivery[] = [];
   const confirmedOrders = orders.filter(o => o.status === 'Confirmed');
   
-  const deliveryStatuses: DeliveryStatus[] = ['Needs Delivery', 'Waiting for Pickup', 'In Transit', 'Delivered', 'Failed', 'Canceled'];
+  const deliveryStatuses: DeliveryStatus[] = ['Cần giao', 'Chờ giao', 'Đang giao', 'Đã giao', 'Thất bại', 'Đã hủy'];
 
   for (let i = 0; i < confirmedOrders.length; i++) {
     const order = confirmedOrders[i];
-    let status: DeliveryStatus = 'Needs Delivery';
+    let status: DeliveryStatus = 'Cần giao';
     let deliveryDetails: Partial<Delivery> = {};
 
     if (i < confirmedOrders.length * 0.8) { // 80% have been processed beyond 'Needs Delivery'
@@ -86,7 +86,7 @@ const generateDeliveries = (orders: Order[]): Delivery[] => {
     }
     
     // Some are completed today
-    if (i > confirmedOrders.length * 0.6 && status === 'Delivered') {
+    if (i > confirmedOrders.length * 0.6 && status === 'Đã giao') {
       deliveryDetails.deliveryDateTime = formatISO(new Date());
     }
 
@@ -104,7 +104,7 @@ export const deliveries: Delivery[] = generateDeliveries(orders);
 
 // Update order statuses based on deliveries that were canceled/failed
 deliveries.forEach(d => {
-  if (d.status === 'Canceled') {
+  if (d.status === 'Đã hủy') {
     const order = orders.find(o => o.id === d.order.id);
     if(order) order.status = 'Canceled';
   }

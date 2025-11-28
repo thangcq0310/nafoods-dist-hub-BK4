@@ -21,13 +21,13 @@ import { useData } from "@/hooks/use-data";
 import { useToast } from "@/hooks/use-toast";
 import { CreateDeliverySheet } from "./create-delivery-sheet";
 
-const statusConfig: { [key in DeliveryStatus]: { variant: "default" | "secondary" | "destructive" | "outline", icon: React.ElementType, label: string } } = {
-  "Needs Delivery": { variant: "outline", icon: Package, label: 'Cần giao' },
-  "Waiting for Pickup": { variant: "secondary", icon: Clock, label: 'Chờ giao' },
-  "In Transit": { variant: "default", icon: Truck, label: 'Đang vận chuyển' },
-  "Delivered": { variant: "default", icon: CheckCircle, label: 'Đã giao' },
-  "Failed": { variant: "destructive", icon: XCircle, label: 'Thất bại' },
-  "Canceled": { variant: "destructive", icon: XCircle, label: 'Đã hủy' },
+const statusConfig: { [key in DeliveryStatus]: { variant: "default" | "secondary" | "destructive" | "outline", icon: React.ElementType } } = {
+  "Cần giao": { variant: "outline", icon: Package },
+  "Chờ giao": { variant: "secondary", icon: Clock },
+  "Đang giao": { variant: "default", icon: Truck },
+  "Đã giao": { variant: "default", icon: CheckCircle },
+  "Thất bại": { variant: "destructive", icon: XCircle },
+  "Đã hủy": { variant: "destructive", icon: XCircle },
 };
 
 export const RowActions = ({ delivery }: { delivery: Delivery }) => {
@@ -36,14 +36,14 @@ export const RowActions = ({ delivery }: { delivery: Delivery }) => {
 
   const handleStatusUpdate = (status: DeliveryStatus) => {
     updateDeliveryStatus(delivery.id, status);
-    toast({ title: "Cập nhật thành công", description: `Trạng thái giao hàng ${delivery.id} đã đổi thành "${statusConfig[status].label}".` });
+    toast({ title: "Cập nhật thành công", description: `Trạng thái giao hàng ${delivery.id} đã đổi thành "${status}".` });
   };
   
   const handlePrint = () => {
     window.open(`/print/delivery/${delivery.id}`, '_blank');
   };
 
-  const isActionable = delivery.status !== 'Delivered' && delivery.status !== 'Canceled' && delivery.status !== 'Failed';
+  const isActionable = delivery.status !== 'Đã giao' && delivery.status !== 'Đã hủy' && delivery.status !== 'Thất bại';
 
   return (
     <DropdownMenu>
@@ -59,7 +59,7 @@ export const RowActions = ({ delivery }: { delivery: Delivery }) => {
           <Copy className="mr-2 h-4 w-4" /> Sao chép mã đơn hàng
         </DropdownMenuItem>
         
-        {delivery.status === "Needs Delivery" && (
+        {delivery.status === "Cần giao" && (
           <CreateDeliverySheet orderId={delivery.order.id} trigger={
             <div className="relative flex cursor-default select-none items-center rounded-sm px-2 py-1.5 text-sm outline-none transition-colors focus:bg-accent focus:text-accent-foreground data-[disabled]:pointer-events-none data-[disabled]:opacity-50">
               <ArrowRight className="mr-2 h-4 w-4" /> Tạo lệnh giao
@@ -67,7 +67,7 @@ export const RowActions = ({ delivery }: { delivery: Delivery }) => {
           } />
         )}
 
-        {isActionable && delivery.status !== "Needs Delivery" && (
+        {isActionable && delivery.status !== "Cần giao" && (
            <DropdownMenuSub>
             <DropdownMenuSubTrigger>
               <Truck className="mr-2 h-4 w-4" />
@@ -77,9 +77,9 @@ export const RowActions = ({ delivery }: { delivery: Delivery }) => {
               <DropdownMenuSubContent>
                 <DropdownMenuLabel>Chọn trạng thái mới</DropdownMenuLabel>
                 <DropdownMenuSeparator />
-                {Object.keys(statusConfig).map(status => (
-                  <DropdownMenuItem key={status} onClick={() => handleStatusUpdate(status as DeliveryStatus)} disabled={delivery.status === status}>
-                    {statusConfig[status as DeliveryStatus].label}
+                {(Object.keys(statusConfig) as DeliveryStatus[]).map(status => (
+                  <DropdownMenuItem key={status} onClick={() => handleStatusUpdate(status)} disabled={delivery.status === status || status === 'Cần giao'}>
+                    {status}
                   </DropdownMenuItem>
                 ))}
               </DropdownMenuSubContent>
@@ -87,7 +87,7 @@ export const RowActions = ({ delivery }: { delivery: Delivery }) => {
           </DropdownMenuSub>
         )}
         
-        {delivery.status !== "Needs Delivery" && (
+        {delivery.status !== "Cần giao" && (
           <>
             <DropdownMenuSeparator />
             <DropdownMenuItem onClick={handlePrint}>
@@ -130,7 +130,7 @@ export const deliveryColumns = [
         return (
             <Badge variant={config.variant}>
               <config.icon className="mr-1 h-3 w-3" />
-              {config.label}
+              {row.original.status}
             </Badge>
         )
     },

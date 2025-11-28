@@ -48,7 +48,7 @@ export type Order = {
   status: OrderStatus;
 };
 
-export type DeliveryStatus = 'Needs Delivery' | 'Waiting for Pickup' | 'In Transit' | 'Delivered' | 'Failed' | 'Canceled';
+export type DeliveryStatus = 'Cần giao' | 'Chờ giao' | 'Đang giao' | 'Đã giao' | 'Thất bại' | 'Đã hủy';
 
 export type Delivery = {
   id: string;
