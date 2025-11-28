@@ -1,6 +1,7 @@
+
 "use client";
 
-import type { Delivery, DeliveryStatus } from "@/lib/types";
+import type { Delivery, DeliveryStatus, OrderStatus } from "@/lib/types";
 import { format } from "date-fns";
 import { Badge } from "@/components/ui/badge";
 import {
@@ -16,13 +17,19 @@ import { useToast } from "@/hooks/use-toast";
 import { CreateDeliverySheet } from "./create-delivery-sheet";
 import { cn } from "@/lib/utils";
 
-const statusConfig: { [key in DeliveryStatus]: { variant: "default" | "secondary" | "destructive" | "outline", icon: React.ElementType } } = {
+const deliveryStatusConfig: { [key in DeliveryStatus]: { variant: "default" | "secondary" | "destructive" | "outline", icon: React.ElementType } } = {
   "Cần giao": { variant: "outline", icon: Package },
   "Chờ giao": { variant: "secondary", icon: Clock },
   "Đang giao": { variant: "default", icon: Truck },
   "Đã giao": { variant: "default", icon: CheckCircle },
   "Thất bại": { variant: "destructive", icon: XCircle },
   "Đã hủy": { variant: "destructive", icon: XCircle },
+};
+
+const orderStatusVariant: { [key in OrderStatus]: "default" | "secondary" | "destructive" } = {
+  "Confirmed": "default",
+  "Pending Approval": "secondary",
+  "Canceled": "destructive",
 };
 
 const ActionButton = ({ onClick, icon: Icon, label, className, ...props }: { onClick: () => void, icon: React.ElementType, label: string, className?: string } & React.ComponentProps<typeof Button>) => (
@@ -32,10 +39,10 @@ const ActionButton = ({ onClick, icon: Icon, label, className, ...props }: { onC
     </Button>
 );
 
-const StatusCell = ({ delivery }: { delivery: Delivery }) => {
+const DeliveryStatusCell = ({ delivery }: { delivery: Delivery }) => {
     const { updateDeliveryStatus } = useData();
     const { toast } = useToast();
-    const config = statusConfig[delivery.status];
+    const config = deliveryStatusConfig[delivery.status];
 
     const handleStatusUpdate = (newStatus: DeliveryStatus) => {
         updateDeliveryStatus(delivery.id, newStatus);
@@ -141,6 +148,14 @@ export const deliveryColumns = [
     cell: ({ row }: { row: { original: Delivery } }) => row.original.order.customer.name,
   },
   {
+    accessorKey: "orderStatus",
+    header: "Trạng thái Đơn hàng",
+    cell: ({ row }: { row: { original: Delivery } }) => {
+      const status = row.original.order.status;
+      return <Badge variant={orderStatusVariant[status]}>{status}</Badge>;
+    },
+  },
+  {
     accessorKey: "deliveryDateTime",
     header: "Ngày Giao",
     cell: ({ row }: { row: { original: Delivery } }) => row.original.deliveryDateTime ? format(new Date(row.original.deliveryDateTime), "dd/MM/yyyy") : 'N/A',
@@ -152,7 +167,7 @@ export const deliveryColumns = [
   },
   {
     accessorKey: "status",
-    header: "Trạng thái",
-    cell: ({ row }: { row: { original: Delivery } }) => <StatusCell delivery={row.original} />,
+    header: "Trạng thái Giao hàng",
+    cell: ({ row }: { row: { original: Delivery } }) => <DeliveryStatusCell delivery={row.original} />,
   },
 ];
