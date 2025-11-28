@@ -95,14 +95,19 @@ export default function PrintDeliveryPage() {
           </TableBody>
         </Table>
         
-        <div className="mt-16 grid grid-cols-2 gap-16 text-center">
+        <div className="mt-16 grid grid-cols-3 gap-8 text-center">
             <div>
-                <p className="font-semibold">Bên Giao</p>
+                <p className="font-semibold">Đại Diện Kho Giao</p>
+                <p className="text-sm text-gray-600">(Ký, ghi rõ họ tên)</p>
+                <div className="h-24"></div>
+            </div>
+             <div>
+                <p className="font-semibold">Tài xế</p>
                 <p className="text-sm text-gray-600">(Ký, ghi rõ họ tên)</p>
                 <div className="h-24"></div>
             </div>
             <div>
-                <p className="font-semibold">Bên Nhận</p>
+                <p className="font-semibold">Bên Nhận Hàng</p>
                 <p className="text-sm text-gray-600">(Ký, ghi rõ họ tên)</p>
                 <div className="h-24"></div>
             </div>
@@ -119,3 +124,4 @@ export default function PrintDeliveryPage() {
     </div>
   );
 }
+
