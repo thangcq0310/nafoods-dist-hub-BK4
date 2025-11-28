@@ -3,7 +3,6 @@
 
 import type { Order, OrderStatus } from "@/lib/types";
 import { format } from "date-fns";
-import { Badge } from "@/components/ui/badge";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -17,9 +16,9 @@ import { useToast } from "@/hooks/use-toast";
 import { cn } from "@/lib/utils";
 
 
-const statusConfig: { [key in OrderStatus]: { variant: "default" | "secondary" | "destructive" } } = {
+const statusConfig: { [key in OrderStatus]: { variant: "default" | "secondary" | "destructive" | "accent" } } = {
   "Confirmed": "default",
-  "Pending Approval": "secondary",
+  "Pending Approval": "accent",
   "Canceled": "destructive",
 };
 
