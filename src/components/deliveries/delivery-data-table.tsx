@@ -86,6 +86,7 @@ export function DeliveryDataTable({ statusFilter }: DeliveryDataTableProps) {
     const dataToExport = data.map(d => ({
         'Mã Giao Hàng': d.id,
         'Mã Đơn Hàng': d.order.id,
+        'Trạng thái Đơn Hàng': d.order.status,
         'Khách Hàng': d.order.customer.name,
         'Địa Chỉ Giao': `${d.order.shippingAddress.street}, ${d.order.shippingAddress.city}`,
         'Phí Giao Hàng': d.deliveryFee || 0,
@@ -94,7 +95,7 @@ export function DeliveryDataTable({ statusFilter }: DeliveryDataTableProps) {
         'SĐT Tài xế': d.driverPhone || 'N/A',
         'Biển số xe': d.vehicleNumber || 'N/A',
         'Nhà vận tải': d.vendor?.name || 'N/A',
-        'Trạng thái': d.status,
+        'Trạng thái Giao Hàng': d.status,
     }));
     exportToExcel(dataToExport, `Danh_sach_giao_hang_${statusFilter ? statusFilter.join('_') : 'all'}`);
   };

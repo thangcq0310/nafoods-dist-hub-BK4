@@ -11,7 +11,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Button } from "@/components/ui/button";
-import { MoreHorizontal, Truck, Printer, CheckCircle, Clock, XCircle, ArrowRight, Package, Ban, Play, Edit } from "lucide-react";
+import { MoreHorizontal, Truck, Printer, CheckCircle, Clock, XCircle, ArrowRight, Package, Ban, Play, Edit, FileWarning, Check } from "lucide-react";
 import { useData } from "@/hooks/use-data";
 import { useToast } from "@/hooks/use-toast";
 import { CreateDeliverySheet } from "./create-delivery-sheet";
@@ -27,11 +27,12 @@ const deliveryStatusConfig: { [key in DeliveryStatus]: { variant: "default" | "s
   "Đã hủy": { variant: "destructive", icon: XCircle },
 };
 
-const orderStatusVariant: { [key in OrderStatus]: "default" | "secondary" | "destructive" | "accent" } = {
-  "Confirmed": "default",
-  "Pending Approval": "accent",
-  "Canceled": "destructive",
+const orderStatusConfig: { [key in OrderStatus]: { variant: "default" | "secondary" | "destructive" | "accent", icon: React.ElementType } } = {
+    "Confirmed": { variant: "default", icon: Check },
+    "Pending Approval": { variant: "accent", icon: FileWarning },
+    "Canceled": { variant: "destructive", icon: Ban },
 };
+
 
 const ActionButton = ({ onClick, icon: Icon, label, className, ...props }: { onClick: () => void, icon: React.ElementType, label: string, className?: string } & React.ComponentProps<typeof Button>) => (
     <Button onClick={onClick} variant="outline" size="sm" className={cn("h-8 gap-1 bg-background text-foreground", className)} {...props}>
@@ -172,6 +173,15 @@ export const deliveryColumns = [
     accessorKey: "driverName",
     header: "Tài xế",
     cell: ({ row }: { row: { original: Delivery } }) => row.original.driverName || 'N/A',
+  },
+  {
+    accessorKey: "orderStatus",
+    header: "Trạng thái Đơn hàng",
+    cell: ({ row }: { row: { original: Delivery } }) => {
+        const status = row.original.order.status;
+        const config = orderStatusConfig[status];
+        return <Badge variant={config.variant} className="gap-1"><config.icon className="h-3 w-3" /> {status}</Badge>;
+    },
   },
   {
     accessorKey: "status",
