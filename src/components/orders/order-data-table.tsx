@@ -17,7 +17,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { useData } from "@/hooks/use-data";
-import { orderColumns } from "./order-columns";
+import { orderColumns, RowActions } from "./order-columns";
 import { CreateOrderSheet } from "./create-order-sheet";
 import { Input } from "@/components/ui/input";
 import {
@@ -57,10 +57,19 @@ export function OrderDataTable() {
 
     setData(newFilteredOrders);
   }, [filter, statusFilter, orders]);
+  
+  const columns: ColumnDef<Order>[] = [
+    ...orderColumns,
+    {
+      id: "actions",
+      header: () => <div className="text-right text-card-foreground">Hành động</div>,
+      cell: ({ row }) => <RowActions order={row.original} />,
+    },
+  ]
 
   const table = useReactTable({
     data,
-    columns: orderColumns as ColumnDef<Order, unknown>[],
+    columns: columns as ColumnDef<Order, unknown>[],
     getCoreRowModel: getCoreRowModel(),
   });
 
@@ -143,7 +152,7 @@ export function OrderDataTable() {
             ) : (
               <TableRow>
                 <TableCell
-                  colSpan={orderColumns.length}
+                  colSpan={columns.length}
                   className="h-24 text-center text-card-foreground"
                 >
                   Không tìm thấy kết quả.
