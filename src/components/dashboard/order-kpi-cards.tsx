@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useData } from "@/hooks/use-data";
@@ -8,7 +9,7 @@ import {
   DollarSign,
   Truck,
 } from "lucide-react";
-import { isThisMonth, parseISO } from 'date-fns';
+import { parseISO } from 'date-fns';
 
 type Kpi = {
   title: string;
@@ -20,45 +21,44 @@ type Kpi = {
 export function OrderKpiCards() {
   const { orders, deliveries } = useData();
 
-  const currentMonthOrders = orders.filter(o => isThisMonth(parseISO(o.orderDate)));
-  
-  const totalOrdersMonth = currentMonthOrders.length;
-  const pendingOrders = currentMonthOrders.filter(o => o.status === "Pending").length;
-  const revenueMonth = currentMonthOrders
+  // Removed isThisMonth filter to show all data
+  const totalOrders = orders.length;
+  const pendingOrders = orders.filter(o => o.status === "Pending").length;
+  const revenue = orders
     .filter(o => o.status === 'Confirmed')
     .reduce((acc, o) => acc + o.totalAmount, 0);
 
-  const deliveredThisMonth = deliveries.filter(d => 
-    d.status === 'Đã giao' && d.deliveryDateTime && isThisMonth(parseISO(d.deliveryDateTime))
+  const delivered = deliveries.filter(d => 
+    d.status === 'Đã giao' && d.deliveryDateTime
   );
 
-  const totalDeliveryCostMonth = deliveredThisMonth.reduce((acc, d) => acc + (d.deliveryFee || 0), 0);
+  const totalDeliveryCost = delivered.reduce((acc, d) => acc + (d.deliveryFee || 0), 0);
 
   
   const kpis: Kpi[] = [
     {
-      title: "Tổng đơn hàng (tháng)",
-      value: totalOrdersMonth.toString(),
+      title: "Tổng đơn hàng",
+      value: totalOrders.toString(),
       icon: Package,
-      description: "Tổng số đơn hàng được tạo trong tháng này.",
+      description: "Tổng số đơn hàng được tạo trong hệ thống.",
     },
     {
-      title: "Đơn hàng chờ duyệt (tháng)",
+      title: "Đơn hàng chờ duyệt",
       value: pendingOrders.toString(),
       icon: Clock,
-      description: "Đơn hàng đang chờ xác nhận trong tháng này.",
+      description: "Đơn hàng đang chờ xác nhận.",
     },
     {
-      title: "Doanh thu (tháng)",
-      value: new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(revenueMonth),
+      title: "Tổng doanh thu",
+      value: new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(revenue),
       icon: DollarSign,
-      description: "Tổng doanh thu từ các đơn đã xác nhận trong tháng.",
+      description: "Tổng doanh thu từ các đơn đã xác nhận.",
     },
      {
-      title: "Chi phí giao hàng (tháng)",
-      value: new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(totalDeliveryCostMonth),
+      title: "Tổng chi phí giao hàng",
+      value: new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(totalDeliveryCost),
       icon: Truck,
-      description: "Tổng chi phí cho các đơn đã giao thành công trong tháng.",
+      description: "Tổng chi phí cho các đơn đã giao thành công.",
     },
   ];
 
