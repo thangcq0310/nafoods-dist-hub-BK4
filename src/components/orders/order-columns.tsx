@@ -16,11 +16,12 @@ import { Check, Ban, MoreHorizontal, Printer, Edit } from "lucide-react";
 import { useData } from "@/hooks/use-data";
 import { useToast } from "@/hooks/use-toast";
 import { cn } from "@/lib/utils";
+import { Badge } from "../ui/badge";
 
 
-const statusConfig: { [key in OrderStatus]: { variant: "default" | "secondary" | "destructive" | "outline" } } = {
+const statusConfig: { [key in OrderStatus]: "default" | "accent" | "destructive" } = {
   "Confirmed": "default",
-  "Pending": "outline",
+  "Pending": "accent",
   "Canceled": "destructive",
 };
 
@@ -55,20 +56,20 @@ const StatusCell = ({ order }: { order: Order }) => {
 
   const nextStatuses = getNextStatuses();
 
-  const button = (
-    <Button size="sm" variant={config.variant} className="w-[120px] justify-center" disabled={!nextStatuses.length}>
+  const badge = (
+     <Badge variant={config} className="w-[120px] justify-center">
         {order.status}
-    </Button>
+    </Badge>
   );
 
   if (!nextStatuses.length) {
-     return <Button size="sm" variant={config.variant} className="w-[120px] justify-center cursor-default">{order.status}</Button>;
+     return <div className="cursor-default">{badge}</div>;
   }
 
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        {button}
+        <Button variant="ghost" className="h-auto p-0">{badge}</Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="start">
         {nextStatuses.map(({ status, label, icon: Icon, isDestructive }) => (
