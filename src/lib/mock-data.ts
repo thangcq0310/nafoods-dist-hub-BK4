@@ -38,11 +38,12 @@ export const vendors: Vendor[] = [
   { id: 'V003', name: 'Xe tải công ty', contactPerson: 'Nội bộ', phone: 'N/A', status: 'Active' },
 ];
 
+const baseDate = new Date(2024, 6, 20, 10, 30, 0); // A static date to avoid hydration errors
+
 const generateOrders = (): Order[] => {
   const statuses: OrderStatus[] = ['Pending', 'Confirmed', 'Canceled'];
   let orders: Order[] = [];
-  const baseDate = new Date(2024, 6, 20, 10, 30, 0); // A static date to avoid hydration errors
-
+  
   for (let i = 1; i <= 25; i++) {
     const customer = customers[i % customers.length];
     const status = i > 20 ? 'Pending' : (i < 5 ? 'Canceled' : 'Confirmed');
@@ -113,7 +114,7 @@ const generateDeliveries = (orders: Order[]): Delivery[] => {
     
     // Some are completed today
     if (i > confirmedOrders.length * 0.6 && status === 'Đã giao') {
-      const completionDate = new Date();
+      const completionDate = new Date(baseDate);
       completionDate.setHours(11, 20, 0);
       deliveryDetails.deliveryDateTime = formatISO(completionDate);
     }

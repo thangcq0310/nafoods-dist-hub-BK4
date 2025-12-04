@@ -30,6 +30,8 @@ export interface DataContextType {
 
 export const DataContext = createContext<DataContextType | null>(null);
 
+const staticDate = new Date(2024, 6, 20, 10, 30, 0).toISOString();
+
 export function DataProvider({ children }: { children: ReactNode }) {
   const [orders, setOrders] = useState<Order[]>(mockOrders);
   const [deliveries, setDeliveries] = useState<Delivery[]>(mockDeliveries);
@@ -43,7 +45,7 @@ export function DataProvider({ children }: { children: ReactNode }) {
         if (order.id === orderId) {
           const updatedOrder = { ...order, status };
           if (status === 'Confirmed' && !order.confirmationDate) {
-            updatedOrder.confirmationDate = new Date().toISOString();
+            updatedOrder.confirmationDate = staticDate;
           }
           return updatedOrder;
         }
@@ -92,7 +94,7 @@ export function DataProvider({ children }: { children: ReactNode }) {
     const newOrder: Order = {
       ...newOrderData,
       id: `DH-${String(orders.length + 1).padStart(5, '0')}`,
-      orderDate: new Date().toISOString(),
+      orderDate: staticDate,
       status: 'Pending'
     };
     setOrders(prevOrders => [newOrder, ...prevOrders]);
