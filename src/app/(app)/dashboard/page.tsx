@@ -1,5 +1,4 @@
 import { KpiCards } from "@/components/dashboard/kpi-cards";
-import { OrdersToProcessTable } from "@/components/dashboard/orders-to-process-table";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
@@ -15,9 +14,6 @@ export default function DashboardPage() {
           </TabsList>
           <TabsContent value="overview" className="space-y-4 pt-4">
              <KpiCards />
-             <div className="grid grid-cols-1 gap-4">
-                <OrdersToProcessTable />
-             </div>
           </TabsContent>
         </Tabs>
       </div>
