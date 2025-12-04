@@ -22,7 +22,7 @@ export function OrderKpiCards() {
   const currentMonthOrders = orders.filter(o => isThisMonth(parseISO(o.orderDate)));
   
   const totalOrdersMonth = currentMonthOrders.length;
-  const pendingOrders = orders.filter(o => o.status === "Pending").length;
+  const pendingOrders = currentMonthOrders.filter(o => o.status === "Pending").length;
   const revenueMonth = currentMonthOrders
     .filter(o => o.status === 'Confirmed')
     .reduce((acc, o) => acc + o.totalAmount, 0);
@@ -36,10 +36,10 @@ export function OrderKpiCards() {
       description: "Tổng số đơn hàng được tạo trong tháng này.",
     },
     {
-      title: "Đơn hàng chờ duyệt",
+      title: "Đơn hàng chờ duyệt (tháng)",
       value: pendingOrders.toString(),
       icon: Clock,
-      description: "Tổng số đơn hàng đang chờ xác nhận.",
+      description: "Đơn hàng đang chờ xác nhận trong tháng này.",
     },
     {
       title: "Doanh thu (tháng)",
