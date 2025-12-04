@@ -1,6 +1,7 @@
 import { OrderStatusChart } from "@/components/dashboard/order-status-chart";
 import { DeliveryStatusChart } from "@/components/dashboard/delivery-status-chart";
 import { OrderKpiCards } from "@/components/dashboard/order-kpi-cards";
+import { AtRiskOrdersTable } from "@/components/dashboard/at-risk-orders-table";
 
 export default function DashboardPage() {
   return (
@@ -18,6 +19,9 @@ export default function DashboardPage() {
               <div className="col-span-12 lg:col-span-3">
                  <DeliveryStatusChart />
               </div>
+          </div>
+          <div>
+            <AtRiskOrdersTable />
           </div>
         </div>
       </div>
