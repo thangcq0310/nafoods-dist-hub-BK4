@@ -18,9 +18,9 @@ import { useToast } from "@/hooks/use-toast";
 import { cn } from "@/lib/utils";
 
 
-const statusConfig: { [key in OrderStatus]: { variant: "default" | "secondary" | "destructive" | "accent" } } = {
+const statusConfig: { [key in OrderStatus]: { variant: "default" | "secondary" | "destructive" | "outline" } } = {
   "Confirmed": "default",
-  "Pending": "accent",
+  "Pending": "outline",
   "Canceled": "destructive",
 };
 
