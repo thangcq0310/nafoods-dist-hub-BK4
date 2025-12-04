@@ -33,59 +33,62 @@ export function AtRiskOrdersTable() {
       }
 
       const delivery = deliveries.find(d => d.order.id === order.id);
-      return delivery?.status === 'Cần giao';
+      return !delivery || delivery?.status === 'Cần giao';
     });
   }, [orders, deliveries]);
 
-  if (atRiskOrders.length === 0) {
-    return null; // Don't render the card if there are no at-risk orders
-  }
 
   return (
-    <Card>
+    <Card className="h-full">
       <CardHeader>
         <CardTitle className="flex items-center gap-2">
           <AlertTriangle className="h-5 w-5 text-destructive" />
           Đơn Hàng Có Rủi Ro
         </CardTitle>
         <CardDescription>
-          Các đơn hàng đã được xác nhận hơn 24 giờ nhưng chưa được tạo lệnh giao hàng.
+          Đã xác nhận trên 24 giờ nhưng chưa có lệnh giao.
         </CardDescription>
       </CardHeader>
       <CardContent>
-        <div className="rounded-md border">
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>Mã Đơn Hàng</TableHead>
-                <TableHead>Khách Hàng</TableHead>
-                <TableHead>Thời gian từ lúc xác nhận</TableHead>
-                <TableHead className="text-right">Hành động</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {atRiskOrders.map(order => (
-                <TableRow key={order.id}>
-                  <TableCell className="font-medium">{order.id}</TableCell>
-                  <TableCell>{order.customer.name}</TableCell>
-                  <TableCell>
-                    <Badge variant="destructive">
-                      {differenceInHours(new Date(), parseISO(order.confirmationDate!))} giờ
-                    </Badge>
-                  </TableCell>
-                  <TableCell className="text-right">
-                     <CreateDeliverySheet orderId={order.id} trigger={
-                        <Button size="sm" className="h-8 gap-1">
-                            <ArrowRight className="h-3.5 w-3.5" />
-                            <span className="sr-only sm:not-sr-only sm:whitespace-nowrap">Tạo lệnh giao</span>
-                        </Button>
-                    } />
-                  </TableCell>
+         {atRiskOrders.length === 0 ? (
+            <div className="flex items-center justify-center h-48 text-muted-foreground">
+                <p>Không có đơn hàng nào rủi ro.</p>
+            </div>
+         ) : (
+            <div className="rounded-md border">
+            <Table>
+                <TableHeader>
+                <TableRow>
+                    <TableHead>Mã Đơn</TableHead>
+                    <TableHead>Khách Hàng</TableHead>
+                    <TableHead>T.gian trễ</TableHead>
+                    <TableHead className="text-right">Hành động</TableHead>
                 </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-        </div>
+                </TableHeader>
+                <TableBody>
+                {atRiskOrders.slice(0, 5).map(order => (
+                    <TableRow key={order.id}>
+                    <TableCell className="font-medium">{order.id}</TableCell>
+                    <TableCell className="text-xs">{order.customer.name}</TableCell>
+                    <TableCell>
+                        <Badge variant="destructive">
+                        {differenceInHours(new Date(), parseISO(order.confirmationDate!))} giờ
+                        </Badge>
+                    </TableCell>
+                    <TableCell className="text-right">
+                        <CreateDeliverySheet orderId={order.id} trigger={
+                            <Button size="sm" className="h-8 gap-1">
+                                <ArrowRight className="h-3.5 w-3.5" />
+                                <span className="sr-only sm:not-sr-only sm:whitespace-nowrap">Tạo lệnh</span>
+                            </Button>
+                        } />
+                    </TableCell>
+                    </TableRow>
+                ))}
+                </TableBody>
+            </Table>
+            </div>
+        )}
       </CardContent>
     </Card>
   );

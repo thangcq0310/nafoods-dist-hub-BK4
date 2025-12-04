@@ -1,7 +1,7 @@
 "use client"
 
 import * as React from "react"
-import { Bar, BarChart, CartesianGrid, XAxis, YAxis } from "recharts"
+import { Bar, BarChart, CartesianGrid, XAxis, YAxis, Legend } from "recharts"
 
 import {
   Card,
@@ -25,7 +25,7 @@ const chartConfig = {
   },
   "Cần giao": {
     label: "Cần giao",
-    color: "hsl(var(--chart-1))",
+    color: "hsl(var(--chart-4))",
   },
   "Chờ giao": {
     label: "Chờ giao",
@@ -56,30 +56,27 @@ export function DeliveryStatusChart() {
     return Object.entries(statusCounts).map(([status, count]) => ({
       status: status,
       count: count,
-      fill: chartConfig[status as keyof typeof chartConfig]?.color || 'hsl(var(--chart-1))',
     }))
   }, [deliveries])
 
   return (
-    <Card className="h-full">
+    <Card>
       <CardHeader>
-        <CardTitle>Trạng thái Giao hàng</CardTitle>
-        <CardDescription>Số lượng lệnh giao hàng đang hoạt động</CardDescription>
+        <CardTitle>Trạng thái Lệnh Giao hàng</CardTitle>
+        <CardDescription>Số lượng lệnh giao hàng đang ở các trạng thái hoạt động chính.</CardDescription>
       </CardHeader>
       <CardContent>
-        <ChartContainer config={chartConfig}>
+        <ChartContainer config={chartConfig} className="h-[250px] w-full">
           <BarChart
             accessibilityLayer
             data={chartData}
-            layout="vertical"
             margin={{
-              left: 10,
+              top: 20,
             }}
           >
-            <CartesianGrid horizontal={false} />
-            <YAxis
+            <CartesianGrid vertical={false} />
+            <XAxis
               dataKey="status"
-              type="category"
               tickLine={false}
               tickMargin={10}
               axisLine={false}
@@ -87,16 +84,23 @@ export function DeliveryStatusChart() {
                 chartConfig[value as keyof typeof chartConfig]?.label
               }
             />
-            <XAxis dataKey="count" type="number" hide />
+            <YAxis />
             <ChartTooltip
               cursor={false}
               content={<ChartTooltipContent indicator="line" />}
             />
+            <Legend />
             <Bar
               dataKey="count"
+              name="Số lượng"
+              fill="hsl(var(--chart-1))"
               radius={4}
-              barSize={32}
-            />
+              barSize={60}
+            >
+                {chartData.map((entry, index) => (
+                    <div key={`cell-${index}`} style={{ backgroundColor: chartConfig[entry.status as keyof typeof chartConfig]?.color }} />
+                ))}
+            </Bar>
           </BarChart>
         </ChartContainer>
       </CardContent>
