@@ -20,8 +20,8 @@ import { cn } from "@/lib/utils";
 const deliveryStatusConfig: { [key in DeliveryStatus]: { variant: "default" | "secondary" | "destructive" | "outline" | "accent", icon: React.ElementType } } = {
   "Cần giao": { variant: "outline", icon: Package },
   "Chờ giao": { variant: "accent", icon: Clock },
-  "Đang giao": { variant: "default", icon: Truck },
-  "Đã giao": { variant: "default", icon: CheckCircle },
+  "Đang giao": { variant: "secondary", icon: Truck },
+  "Đã giao": { variant: "outline", icon: CheckCircle },
   "Thất bại": { variant: "destructive", icon: XCircle },
   "Đã hủy": { variant: "destructive", icon: XCircle },
 };
