@@ -39,13 +39,13 @@ export const vendors: Vendor[] = [
 ];
 
 const generateOrders = (): Order[] => {
-  const statuses: OrderStatus[] = ['Pending Approval', 'Confirmed', 'Canceled'];
+  const statuses: OrderStatus[] = ['Pending', 'Confirmed', 'Canceled'];
   let orders: Order[] = [];
   const baseDate = new Date(2024, 6, 20, 10, 30, 0); // A static date to avoid hydration errors
 
   for (let i = 1; i <= 25; i++) {
     const customer = customers[i % customers.length];
-    const status = i > 20 ? 'Pending Approval' : (i < 5 ? 'Canceled' : 'Confirmed');
+    const status = i > 20 ? 'Pending' : (i < 5 ? 'Canceled' : 'Confirmed');
     const orderDate = subDays(baseDate, Math.floor(i/2));
     const deliveryDate = subDays(baseDate, Math.floor(i/2) - 2);
     

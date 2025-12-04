@@ -20,7 +20,7 @@ import { cn } from "@/lib/utils";
 
 const statusConfig: { [key in OrderStatus]: { variant: "default" | "secondary" | "destructive" | "accent" } } = {
   "Confirmed": "default",
-  "Pending Approval": "accent",
+  "Pending": "accent",
   "Canceled": "destructive",
 };
 
@@ -39,7 +39,7 @@ const StatusCell = ({ order }: { order: Order }) => {
 
   const getNextStatuses = (): { status: OrderStatus; label: string; icon: React.ElementType; isDestructive?: boolean }[] => {
     switch (order.status) {
-      case "Pending Approval":
+      case "Pending":
         return [
           { status: 'Confirmed', label: 'Xác nhận đơn hàng', icon: Check },
           { status: 'Canceled', label: 'Hủy đơn hàng', icon: Ban, isDestructive: true },

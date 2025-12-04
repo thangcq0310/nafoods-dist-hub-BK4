@@ -157,16 +157,13 @@ export function CreateOrderSheet() {
 
     const totalAmount = orderItems.reduce((sum, item) => sum + item.total, 0);
 
-    const newOrder = {
+    createOrder({
       customer,
       shippingAddress,
       deliveryDate: new Date(data.deliveryDate).toISOString(),
       items: orderItems,
       totalAmount,
-      status: 'Pending Approval' as const,
-    };
-
-    createOrder(newOrder);
+    });
     toast({ title: "Thành công!", description: "Đơn hàng đã được tạo." });
     form.reset();
     setOpen(false);

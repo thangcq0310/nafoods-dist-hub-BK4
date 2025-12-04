@@ -103,7 +103,7 @@ export function OrderDataTable() {
             </SelectTrigger>
             <SelectContent>
               <SelectItem value="all">Tất cả</SelectItem>
-              <SelectItem value="Pending Approval">Chờ duyệt</SelectItem>
+              <SelectItem value="Pending">Chờ duyệt</SelectItem>
               <SelectItem value="Confirmed">Đã xác nhận</SelectItem>
               <SelectItem value="Canceled">Đã hủy</SelectItem>
             </SelectContent>

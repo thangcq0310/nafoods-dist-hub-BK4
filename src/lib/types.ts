@@ -31,7 +31,7 @@ export type Vendor = {
   status: 'Active' | 'Inactive';
 };
 
-export type OrderStatus = 'Pending Approval' | 'Confirmed' | 'Canceled';
+export type OrderStatus = 'Pending' | 'Confirmed' | 'Canceled';
 
 export type OrderItem = {
   product: Product;

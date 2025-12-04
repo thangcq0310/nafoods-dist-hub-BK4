@@ -93,6 +93,7 @@ export function DataProvider({ children }: { children: ReactNode }) {
       ...newOrderData,
       id: `DH-${String(orders.length + 1).padStart(5, '0')}`,
       orderDate: new Date().toISOString(),
+      status: 'Pending'
     };
     setOrders(prevOrders => [newOrder, ...prevOrders]);
   }, [orders.length]);
