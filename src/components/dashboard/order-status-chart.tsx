@@ -1,7 +1,7 @@
 "use client"
 
 import * as React from "react"
-import { Donut, Legend, Pie, PieChart, PieLabel } from "recharts"
+import { Legend, Pie, PieChart } from "recharts"
 
 import {
   Card,
@@ -73,9 +73,7 @@ export function OrderStatusChart() {
               nameKey="status"
               innerRadius={60}
               strokeWidth={5}
-            >
-              <PieLabel
-                content={({ viewBox }) => {
+              label={({ viewBox }) => {
                   if (viewBox && "cx" in viewBox && "cy" in viewBox) {
                     return (
                       <text
@@ -102,8 +100,8 @@ export function OrderStatusChart() {
                     )
                   }
                 }}
-              />
-            </Pie>
+              labelLine={false}
+            />
           </PieChart>
         </ChartContainer>
       </CardContent>
