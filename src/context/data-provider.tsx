@@ -3,7 +3,7 @@
 
 import type { ReactNode } from 'react';
 import { createContext, useState, useCallback } from 'react';
-import type { Order, Delivery, Customer, Product, Vendor, OrderStatus, DeliveryStatus } from '@/lib/types';
+import type { Order, Delivery, Customer, Product, Vendor, OrderStatus, DeliveryStatus, OrderItem } from '@/lib/types';
 import { 
   orders as mockOrders,
   deliveries as mockDeliveries,
@@ -23,7 +23,7 @@ export interface DataContextType {
   createOrder: (newOrder: Omit<Order, 'id' | 'orderDate' | 'confirmationDate'>) => void;
   createDelivery: (newDeliveryData: { orderId: string, vendorId: string, deliveryDateTime: string, driverName: string, driverPhone: string, vehicleNumber: string, deliveryFee?: number }) => void;
   updateDelivery: (deliveryId: string, updatedData: { vendorId: string, deliveryDateTime: string, driverName: string, driverPhone: string, vehicleNumber: string, deliveryFee?: number }) => void;
-  createProduct: (newProduct: Omit<Product, 'id'>) => void;
+  createProduct: (newProduct: Omit<Product, 'id' | 'price'>) => void;
   createCustomer: (newCustomer: Omit<Customer, 'id'>) => void;
   createVendor: (newVendor: Omit<Vendor, 'id'>) => void;
 }
@@ -138,9 +138,10 @@ export function DataProvider({ children }: { children: ReactNode }) {
     );
   }, [vendors]);
 
-  const createProduct = useCallback((newProductData: Omit<Product, 'id'>) => {
+  const createProduct = useCallback((newProductData: Omit<Product, 'id' | 'price'>) => {
     const newProduct: Product = {
       ...newProductData,
+      price: 0, // Default price
       id: `P-${String(products.length + 1).padStart(3, '0')}`,
     };
     setProducts(prev => [newProduct, ...prev]);

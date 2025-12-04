@@ -31,6 +31,14 @@ export const productColumns = [
     cell: ({ row }: { row: { original: Product } }) => row.original.category,
   },
   {
+    accessorKey: "price",
+    header: () => <div className="text-right">Giá</div>,
+    cell: ({ row }: { row: { original: Product } }) => {
+        const price = row.original.price;
+        return <div className="text-right font-medium">{new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(price)}</div>;
+    },
+  },
+  {
     accessorKey: "status",
     header: "Trạng thái",
     cell: ({ row }: { row: { original: Product } }) => {

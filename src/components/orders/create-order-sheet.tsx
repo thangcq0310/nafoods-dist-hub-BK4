@@ -2,7 +2,7 @@
 "use client";
 
 import * as React from 'react';
-import { useForm, useFieldArray } from 'react-hook-form';
+import { useForm, useFieldArray, useWatch } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
 import { Button } from "@/components/ui/button";
@@ -31,11 +31,13 @@ import { useData } from "@/hooks/use-data";
 import type { Address } from '@/lib/types';
 import { useToast } from '@/hooks/use-toast';
 import { Separator } from '../ui/separator';
+import { cn } from '@/lib/utils';
 
 const orderItemSchema = z.object({
   productId: z.string().min(1, "Vui lòng chọn sản phẩm."),
   quantity: z.coerce.number().min(1, "Số lượng phải lớn hơn 0."),
   unit: z.enum(['Kg', 'Jar', 'Bag', 'Box']),
+  unitPrice: z.coerce.number().min(0, "Đơn giá không được âm."),
 });
 
 const formSchema = z.object({
@@ -47,6 +49,29 @@ const formSchema = z.object({
 });
 
 type OrderFormValues = z.infer<typeof formSchema>;
+
+const TotalAmount = ({ control }: { control: any }) => {
+    const items = useWatch({ control, name: 'items' });
+    const totalAmount = React.useMemo(() => {
+        return items.reduce((acc: number, item: { quantity: number, unitPrice: number}) => {
+            return acc + (item.quantity || 0) * (item.unitPrice || 0);
+        }, 0);
+    }, [items]);
+
+    return (
+        <div className="flex justify-end pt-4">
+            <div className="w-full max-w-sm space-y-2">
+                <Separator />
+                <div className="flex justify-between font-semibold text-lg">
+                    <span>Tổng cộng:</span>
+                    <span>
+                        {new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(totalAmount)}
+                    </span>
+                </div>
+            </div>
+        </div>
+    );
+}
 
 export function CreateOrderSheet() {
   const [open, setOpen] = React.useState(false);
@@ -61,7 +86,7 @@ export function CreateOrderSheet() {
       addressId: '',
       shippingPhone: '',
       deliveryDate: '',
-      items: [{ productId: '', quantity: 1, unit: 'Box' }],
+      items: [{ productId: '', quantity: 1, unit: 'Box', unitPrice: 0 }],
     },
   });
 
@@ -72,6 +97,7 @@ export function CreateOrderSheet() {
 
   const customerId = form.watch('customerId');
   const addressId = form.watch('addressId');
+  const currentItems = form.watch('items');
 
   React.useEffect(() => {
     if (customerId) {
@@ -112,21 +138,31 @@ export function CreateOrderSheet() {
       return;
     }
 
-    // Create a new shipping address object for the order, using the potentially edited phone number
     const shippingAddress: Address = {
         ...originalAddress,
         phone: data.shippingPhone,
     };
+    
+    const orderItems = data.items.map(item => {
+        const product = products.find(p => p.id === item.productId);
+        if (!product) throw new Error("Invalid product");
+        return {
+            product,
+            quantity: item.quantity,
+            unit: item.unit,
+            unitPrice: item.unitPrice,
+            total: item.quantity * item.unitPrice
+        };
+    });
+
+    const totalAmount = orderItems.reduce((sum, item) => sum + item.total, 0);
 
     const newOrder = {
       customer,
       shippingAddress,
       deliveryDate: new Date(data.deliveryDate).toISOString(),
-      items: data.items.map(item => {
-        const product = products.find(p => p.id === item.productId);
-        if (!product) throw new Error("Invalid product");
-        return { product, quantity: item.quantity, unit: item.unit };
-      }),
+      items: orderItems,
+      totalAmount,
       status: 'Pending Approval' as const,
     };
 
@@ -143,7 +179,7 @@ export function CreateOrderSheet() {
           <PlusCircle className="mr-2 h-4 w-4" /> Tạo Đơn hàng
         </Button>
       </SheetTrigger>
-      <SheetContent className="sm:max-w-2xl w-full">
+      <SheetContent className="sm:max-w-4xl w-full">
         <SheetHeader>
           <SheetTitle>Tạo Đơn Hàng Mới</SheetTitle>
           <SheetDescription>
@@ -158,7 +194,10 @@ export function CreateOrderSheet() {
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Khách hàng</FormLabel>
-                  <Select onValueChange={field.onChange} defaultValue={field.value}>
+                  <Select onValueChange={(value) => {
+                      field.onChange(value);
+                      form.setValue('items', [{ productId: '', quantity: 1, unit: 'Box', unitPrice: 0 }]);
+                  }} defaultValue={field.value}>
                     <FormControl>
                       <SelectTrigger><SelectValue placeholder="Chọn khách hàng" /></SelectTrigger>
                     </FormControl>
@@ -221,16 +260,23 @@ export function CreateOrderSheet() {
             
             <h3 className="text-lg font-medium">Chi tiết sản phẩm</h3>
             <div className="space-y-4">
-              {fields.map((field, index) => (
-                <div key={field.id} className="grid grid-cols-10 gap-2 items-end p-3 border rounded-md relative">
-                   <div className="col-span-10 sm:col-span-4">
+              {fields.map((field, index) => {
+                const item = currentItems[index];
+                const lineTotal = (item?.quantity || 0) * (item?.unitPrice || 0);
+                return (
+                 <div key={field.id} className="grid grid-cols-12 gap-2 items-start p-3 border rounded-md relative">
+                   <div className="col-span-12 sm:col-span-3">
                     <FormField
                       control={form.control}
                       name={`items.${index}.productId`}
                       render={({ field }) => (
                         <FormItem>
-                          {index === 0 && <FormLabel>Sản phẩm</FormLabel>}
-                          <Select onValueChange={field.onChange} defaultValue={field.value}>
+                          <FormLabel>Sản phẩm</FormLabel>
+                          <Select onValueChange={(value) => {
+                              field.onChange(value);
+                              const product = products.find(p => p.id === value);
+                              form.setValue(`items.${index}.unitPrice`, product?.price || 0);
+                          }} defaultValue={field.value}>
                             <FormControl><SelectTrigger><SelectValue placeholder="Chọn sản phẩm" /></SelectTrigger></FormControl>
                             <SelectContent>{products.map(p => <SelectItem key={p.id} value={p.id}>{p.name}</SelectItem>)}</SelectContent>
                           </Select>
@@ -239,26 +285,39 @@ export function CreateOrderSheet() {
                       )}
                     />
                   </div>
-                  <div className="col-span-5 sm:col-span-2">
+                  <div className="col-span-6 sm:col-span-2">
                      <FormField
                       control={form.control}
                       name={`items.${index}.quantity`}
                       render={({ field }) => (
                         <FormItem>
-                           {index === 0 && <FormLabel>Số lượng</FormLabel>}
+                           <FormLabel>Số lượng</FormLabel>
                           <FormControl><Input type="number" placeholder="SL" {...field} /></FormControl>
                           <FormMessage />
                         </FormItem>
                       )}
                     />
                   </div>
-                  <div className="col-span-5 sm:col-span-3">
+                   <div className="col-span-6 sm:col-span-2">
+                     <FormField
+                      control={form.control}
+                      name={`items.${index}.unitPrice`}
+                      render={({ field }) => (
+                        <FormItem>
+                           <FormLabel>Đơn giá</FormLabel>
+                          <FormControl><Input type="number" placeholder="Đơn giá" {...field} /></FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  </div>
+                  <div className="col-span-6 sm:col-span-2">
                      <FormField
                       control={form.control}
                       name={`items.${index}.unit`}
                       render={({ field }) => (
                         <FormItem>
-                           {index === 0 && <FormLabel>Đơn vị</FormLabel>}
+                           <FormLabel>Đơn vị</FormLabel>
                            <Select onValueChange={field.onChange} defaultValue={field.value}>
                             <FormControl><SelectTrigger><SelectValue placeholder="Đơn vị" /></SelectTrigger></FormControl>
                             <SelectContent>
@@ -273,17 +332,26 @@ export function CreateOrderSheet() {
                       )}
                     />
                   </div>
-                  <div className="col-span-10 sm:col-span-1 flex justify-end">
+                   <div className="col-span-6 sm:col-span-2">
+                        <FormLabel>Thành tiền</FormLabel>
+                        <div className="h-10 flex items-center justify-end pr-2 font-medium">
+                            {new Intl.NumberFormat('vi-VN').format(lineTotal)}
+                        </div>
+                    </div>
+                  <div className={cn("col-span-12 sm:col-span-1 flex items-end justify-end", fields.length > 1 && "sm:pt-7")}>
                     <Button type="button" variant="ghost" size="icon" onClick={() => remove(index)} disabled={fields.length <= 1}>
                       <Trash2 className="h-4 w-4 text-destructive" />
                     </Button>
                   </div>
                 </div>
-              ))}
+                );
+            })}
             </div>
-            <Button type="button" variant="outline" size="sm" onClick={() => append({ productId: '', quantity: 1, unit: 'Box' })}>
+            <Button type="button" variant="outline" size="sm" onClick={() => append({ productId: '', quantity: 1, unit: 'Box', unitPrice: 0 })}>
               <PlusCircle className="mr-2 h-4 w-4" /> Thêm sản phẩm
             </Button>
+            
+            <TotalAmount control={form.control} />
             
             <SheetFooter className="pt-4 bg-background sticky bottom-0 z-10">
               <SheetClose asChild>

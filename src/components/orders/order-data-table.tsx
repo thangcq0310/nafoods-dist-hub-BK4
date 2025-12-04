@@ -71,8 +71,9 @@ export function OrderDataTable() {
         'Ngày đặt': format(new Date(o.orderDate), 'dd/MM/yyyy'),
         'Ngày giao': format(new Date(o.deliveryDate), 'dd/MM/yyyy'),
         'Thời gian xác nhận': o.confirmationDate ? format(new Date(o.confirmationDate), 'dd/MM/yyyy HH:mm') : 'N/A',
+        'Tổng tiền': o.totalAmount,
         'Trạng thái': o.status,
-        'Sản phẩm': o.items.map(item => `${item.product.name} (SL: ${item.quantity} ${item.unit})`).join('; ')
+        'Sản phẩm': o.items.map(item => `${item.product.name} (SL: ${item.quantity} ${item.unit}, Đơn giá: ${item.unitPrice})`).join('; ')
     }));
     exportToExcel(dataToExport, "Danh_sach_don_hang");
   };

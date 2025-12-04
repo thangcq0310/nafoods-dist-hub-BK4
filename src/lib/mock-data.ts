@@ -25,11 +25,11 @@ export const customers: Customer[] = [
 ];
 
 export const products: Product[] = [
-  { id: 'P001', name: 'Chanh dây sấy dẻo', category: 'Trái cây sấy', status: 'Active' },
-  { id: 'P002', name: 'Nước ép Chanh Dây', category: 'Nước ép', status: 'Active' },
-  { id: 'P003', name: 'Mít sấy', category: 'Trái cây sấy', status: 'Active' },
-  { id: 'P004', name: 'Snack khoai lang', category: 'Snacks', status: 'Inactive' },
-  { id: 'P005', name: 'Mứt dâu tằm', category: 'Mứt', status: 'Active' },
+  { id: 'P001', name: 'Chanh dây sấy dẻo', category: 'Trái cây sấy', price: 120000, status: 'Active' },
+  { id: 'P002', name: 'Nước ép Chanh Dây', category: 'Nước ép', price: 250000, status: 'Active' },
+  { id: 'P003', name: 'Mít sấy', category: 'Trái cây sấy', price: 150000, status: 'Active' },
+  { id: 'P004', name: 'Snack khoai lang', category: 'Snacks', price: 80000, status: 'Inactive' },
+  { id: 'P005', name: 'Mứt dâu tằm', category: 'Mứt', price: 180000, status: 'Active' },
 ];
 
 export const vendors: Vendor[] = [
@@ -56,6 +56,14 @@ const generateOrders = (): Order[] => {
         confDate.setHours(14, 6, 0); // Static time for confirmation
         confirmationDate = formatISO(confDate);
     }
+    
+    const items = [
+      { product: products[i % products.length], quantity: i * 2, unit: 'Box' as const, unitPrice: products[i % products.length].price, total: products[i % products.length].price * i * 2 },
+      ...(i % 2 === 0 ? [{ product: products[(i + 1) % products.length], quantity: i + 5, unit: 'Kg' as const, unitPrice: products[(i + 1) % products.length].price, total: products[(i + 1) % products.length].price * (i+5) }] : [])
+    ];
+    
+    const totalAmount = items.reduce((sum, item) => sum + item.total, 0);
+
 
     orders.push({
       id: `DH-${String(i).padStart(5, '0')}`,
@@ -64,10 +72,8 @@ const generateOrders = (): Order[] => {
       orderDate: formatISO(orderDate),
       deliveryDate: formatISO(deliveryDate),
       confirmationDate: confirmationDate,
-      items: [
-        { product: products[i % products.length], quantity: i * 2, unit: 'Box' },
-        ...(i % 2 === 0 ? [{ product: products[(i + 1) % products.length], quantity: i + 5, unit: 'Kg' as 'Kg' }] : [])
-      ],
+      items: items,
+      totalAmount,
       status: status,
     });
   }
@@ -107,8 +113,11 @@ const generateDeliveries = (orders: Order[]): Delivery[] => {
     
     // Some are completed today
     if (i > confirmedOrders.length * 0.6 && status === 'Đã giao') {
-      deliveryDetails.deliveryDateTime = formatISO(new Date());
+      const completionDate = new Date();
+      completionDate.setHours(11, 20, 0);
+      deliveryDetails.deliveryDateTime = formatISO(completionDate);
     }
+
 
     deliveries.push({
       id: `GH-${String(i + 1).padStart(5, '0')}`,

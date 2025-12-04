@@ -107,13 +107,13 @@ export const orderColumns = [
     cell: ({ row }: { row: { original: Order } }) => format(new Date(row.original.deliveryDate), "dd/MM/yyyy"),
   },
    {
-    accessorKey: "confirmationDate",
-    header: "Thời gian xác nhận",
-    cell: ({ row }: { row: { original: Order } }) => 
-      row.original.confirmationDate 
-        ? format(new Date(row.original.confirmationDate), "dd/MM/yyyy HH:mm") 
-        : 'N/A',
-  },
+    accessorKey: "totalAmount",
+    header: () => <div className="text-right">Tổng tiền</div>,
+    cell: ({ row }: { row: { original: Order } }) => {
+        const amount = row.original.totalAmount;
+        return <div className="text-right font-medium">{new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(amount)}</div>;
+    },
+   },
   {
     accessorKey: "status",
     header: () => <div className="text-center">Trạng thái</div>,

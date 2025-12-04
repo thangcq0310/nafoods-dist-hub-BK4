@@ -19,6 +19,7 @@ export type Product = {
   id: string;
   name: string;
   category: string;
+  price: number;
   status: 'Active' | 'Inactive';
 };
 
@@ -36,6 +37,8 @@ export type OrderItem = {
   product: Product;
   quantity: number;
   unit: 'Kg' | 'Jar' | 'Bag' | 'Box'; // Hũ -> Jar, Túi -> Bag, Thùng -> Box
+  unitPrice: number;
+  total: number;
 };
 
 export type Order = {
@@ -46,6 +49,7 @@ export type Order = {
   deliveryDate: string; // ISO string
   confirmationDate?: string; // ISO string
   items: OrderItem[];
+  totalAmount: number;
   status: OrderStatus;
 };
 

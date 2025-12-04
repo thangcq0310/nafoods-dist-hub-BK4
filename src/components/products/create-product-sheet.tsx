@@ -32,6 +32,7 @@ import { useToast } from '@/hooks/use-toast';
 const formSchema = z.object({
   name: z.string().min(1, "Vui lòng nhập tên sản phẩm."),
   category: z.string().min(1, "Vui lòng nhập danh mục."),
+  price: z.coerce.number().min(0, "Giá không được âm."),
 });
 
 type ProductFormValues = z.infer<typeof formSchema>;
@@ -46,6 +47,7 @@ export function CreateProductSheet() {
     defaultValues: {
       name: '',
       category: '',
+      price: 0,
     },
   });
 
@@ -93,6 +95,19 @@ export function CreateProductSheet() {
                   <FormLabel>Danh mục</FormLabel>
                   <FormControl>
                     <Input placeholder="Trái cây sấy" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="price"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Giá (VND)</FormLabel>
+                  <FormControl>
+                    <Input type="number" placeholder="120000" {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
