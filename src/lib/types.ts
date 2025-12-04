@@ -60,4 +60,5 @@ export type Delivery = {
   driverPhone?: string;
   vehicleNumber?: string;
   status: DeliveryStatus;
+  deliveryFee?: number;
 };

@@ -15,6 +15,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { format } from 'date-fns';
+import { Separator } from '@/components/ui/separator';
 
 export default function PrintDeliveryPage() {
   const params = useParams();
@@ -94,6 +95,21 @@ export default function PrintDeliveryPage() {
             ))}
           </TableBody>
         </Table>
+
+         <div className="flex justify-end mt-4">
+          <div className="w-full max-w-xs space-y-2">
+            <Separator />
+            <div className="flex justify-between">
+              <span className="font-semibold">Phí giao hàng:</span>
+              <span>
+                {delivery.deliveryFee
+                  ? new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(delivery.deliveryFee)
+                  : 'N/A'}
+              </span>
+            </div>
+            <Separator />
+          </div>
+        </div>
         
         <div className="mt-16 grid grid-cols-3 gap-8 text-center">
             <div>
@@ -124,4 +140,3 @@ export default function PrintDeliveryPage() {
     </div>
   );
 }
-

@@ -38,6 +38,7 @@ const formSchema = z.object({
   driverName: z.string().min(1, "Vui lòng nhập tên tài xế."),
   driverPhone: z.string().min(1, "Vui lòng nhập SĐT tài xế."),
   vehicleNumber: z.string().min(1, "Vui lòng nhập biển số xe."),
+  deliveryFee: z.coerce.number().optional(),
 });
 
 type DeliveryFormValues = z.infer<typeof formSchema>;
@@ -59,6 +60,7 @@ export function EditDeliverySheet({ delivery }: EditDeliverySheetProps) {
       driverName: delivery.driverName || '',
       driverPhone: delivery.driverPhone || '',
       vehicleNumber: delivery.vehicleNumber || '',
+      deliveryFee: delivery.deliveryFee || 0,
     },
   });
   
@@ -69,6 +71,7 @@ export function EditDeliverySheet({ delivery }: EditDeliverySheetProps) {
       driverName: delivery.driverName || '',
       driverPhone: delivery.driverPhone || '',
       vehicleNumber: delivery.vehicleNumber || '',
+      deliveryFee: delivery.deliveryFee || 0,
     })
   }, [delivery, form]);
 
@@ -91,7 +94,7 @@ export function EditDeliverySheet({ delivery }: EditDeliverySheetProps) {
             <span className="sr-only sm:not-sr-only sm:whitespace-nowrap">Chỉnh sửa</span>
         </Button>
       </DialogTrigger>
-      <DialogContent className="sm:max-w-md">
+      <DialogContent className="sm:max-w-lg">
         <DialogHeader>
           <DialogTitle>Chỉnh sửa Lệnh Giao Hàng #{delivery.id}</DialogTitle>
           <DialogDescription>
@@ -118,19 +121,34 @@ export function EditDeliverySheet({ delivery }: EditDeliverySheetProps) {
                 </FormItem>
               )}
             />
-            <FormField
-              control={form.control}
-              name="deliveryDateTime"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Ngày giờ giao</FormLabel>
-                  <FormControl>
-                    <Input type="datetime-local" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+            <div className="grid grid-cols-2 gap-4">
+              <FormField
+                control={form.control}
+                name="deliveryDateTime"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Ngày giờ giao</FormLabel>
+                    <FormControl>
+                      <Input type="datetime-local" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+               <FormField
+                control={form.control}
+                name="deliveryFee"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Phí giao hàng (VND)</FormLabel>
+                    <FormControl>
+                      <Input type="number" placeholder="50000" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </div>
             <FormField
               control={form.control}
               name="driverName"
@@ -144,32 +162,34 @@ export function EditDeliverySheet({ delivery }: EditDeliverySheetProps) {
                 </FormItem>
               )}
             />
-            <FormField
-              control={form.control}
-              name="driverPhone"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>SĐT tài xế</FormLabel>
-                  <FormControl>
-                    <Input placeholder="0901234567" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-             <FormField
-              control={form.control}
-              name="vehicleNumber"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Biển số xe</FormLabel>
-                  <FormControl>
-                    <Input placeholder="51C-123.45" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+            <div className="grid grid-cols-2 gap-4">
+                 <FormField
+                control={form.control}
+                name="driverPhone"
+                render={({ field }) => (
+                    <FormItem>
+                    <FormLabel>SĐT tài xế</FormLabel>
+                    <FormControl>
+                        <Input placeholder="0901234567" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                    </FormItem>
+                )}
+                />
+                <FormField
+                control={form.control}
+                name="vehicleNumber"
+                render={({ field }) => (
+                    <FormItem>
+                    <FormLabel>Biển số xe</FormLabel>
+                    <FormControl>
+                        <Input placeholder="51C-123.45" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                    </FormItem>
+                )}
+                />
+            </div>
             <DialogFooter className="pt-4">
               <DialogClose asChild>
                 <Button type="button" variant="ghost">Hủy</Button>

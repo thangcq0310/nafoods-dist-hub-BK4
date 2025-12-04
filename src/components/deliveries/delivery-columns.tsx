@@ -156,11 +156,11 @@ export const deliveryColumns = [
     cell: ({ row }: { row: { original: Delivery } }) => row.original.order.customer.name,
   },
   {
-    accessorKey: "orderStatus",
-    header: "Trạng thái Đơn hàng",
+    accessorKey: "deliveryFee",
+    header: "Phí Giao Hàng",
     cell: ({ row }: { row: { original: Delivery } }) => {
-      const status = row.original.order.status;
-      return <Badge variant={orderStatusVariant[status]}>{status}</Badge>;
+        const fee = row.original.deliveryFee;
+        return fee ? new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(fee) : 'N/A';
     },
   },
   {

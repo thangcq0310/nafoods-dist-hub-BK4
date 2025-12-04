@@ -51,8 +51,9 @@ const generateOrders = (): Order[] => {
     
     let confirmationDate: string | undefined;
     if (status === 'Confirmed') {
-        const confDate = subDays(baseDate, Math.floor(i/2) - 1)
-        confDate.setHours(14, 6, 0); // Static time
+        const confDate = new Date(orderDate.getTime());
+        confDate.setDate(confDate.getDate() + 1);
+        confDate.setHours(14, 6, 0); // Static time for confirmation
         confirmationDate = formatISO(confDate);
     }
 
@@ -78,7 +79,6 @@ export const orders: Order[] = generateOrders();
 const generateDeliveries = (orders: Order[]): Delivery[] => {
   let deliveries: Delivery[] = [];
   const confirmedOrders = orders.filter(o => o.status === 'Confirmed' || o.status === 'Canceled');
-  const baseDate = new Date(); // Can be dynamic here, doesn't affect hydration as much if not rendered directly
   
   const deliveryStatuses: DeliveryStatus[] = ['Cần giao', 'Chờ giao', 'Đang giao', 'Đã giao', 'Thất bại', 'Đã hủy'];
 
@@ -101,6 +101,7 @@ const generateDeliveries = (orders: Order[]): Delivery[] => {
         driverName: `Tài xế ${i+1}`,
         driverPhone: `090${i.toString().padStart(7, '0')}`,
         vehicleNumber: `51C-${i.toString().padStart(5,'0')}`,
+        deliveryFee: (i+1) * 10000,
       };
     }
     

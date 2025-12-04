@@ -35,6 +35,7 @@ const formSchema = z.object({
   driverName: z.string().min(1, "Vui lòng nhập tên tài xế."),
   driverPhone: z.string().min(1, "Vui lòng nhập SĐT tài xế."),
   vehicleNumber: z.string().min(1, "Vui lòng nhập biển số xe."),
+  deliveryFee: z.coerce.number().optional(),
 });
 
 type DeliveryFormValues = z.infer<typeof formSchema>;
@@ -59,6 +60,7 @@ export function CreateDeliverySheet({ orderId, trigger }: CreateDeliverySheetPro
       driverName: '',
       driverPhone: '',
       vehicleNumber: '',
+      deliveryFee: 0,
     },
   });
 
@@ -89,7 +91,7 @@ export function CreateDeliverySheet({ orderId, trigger }: CreateDeliverySheetPro
       <DialogTrigger asChild>
         {trigger}
       </DialogTrigger>
-      <DialogContent className="sm:max-w-md">
+      <DialogContent className="sm:max-w-lg">
         <DialogHeader>
           <DialogTitle>Tạo Lệnh Giao Hàng cho Đơn #{orderId}</DialogTitle>
           <DialogDescription>
@@ -116,19 +118,34 @@ export function CreateDeliverySheet({ orderId, trigger }: CreateDeliverySheetPro
                 </FormItem>
               )}
             />
-            <FormField
-              control={form.control}
-              name="deliveryDateTime"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Ngày giờ giao</FormLabel>
-                  <FormControl>
-                    <Input type="datetime-local" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+            <div className="grid grid-cols-2 gap-4">
+              <FormField
+                control={form.control}
+                name="deliveryDateTime"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Ngày giờ giao</FormLabel>
+                    <FormControl>
+                      <Input type="datetime-local" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+               <FormField
+                control={form.control}
+                name="deliveryFee"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Phí giao hàng (VND)</FormLabel>
+                    <FormControl>
+                      <Input type="number" placeholder="50000" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </div>
             <FormField
               control={form.control}
               name="driverName"
@@ -142,32 +159,34 @@ export function CreateDeliverySheet({ orderId, trigger }: CreateDeliverySheetPro
                 </FormItem>
               )}
             />
-            <FormField
-              control={form.control}
-              name="driverPhone"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>SĐT tài xế</FormLabel>
-                  <FormControl>
-                    <Input placeholder="0901234567" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-             <FormField
-              control={form.control}
-              name="vehicleNumber"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Biển số xe</FormLabel>
-                  <FormControl>
-                    <Input placeholder="51C-123.45" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+             <div className="grid grid-cols-2 gap-4">
+                <FormField
+                control={form.control}
+                name="driverPhone"
+                render={({ field }) => (
+                    <FormItem>
+                    <FormLabel>SĐT tài xế</FormLabel>
+                    <FormControl>
+                        <Input placeholder="0901234567" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                    </FormItem>
+                )}
+                />
+                <FormField
+                control={form.control}
+                name="vehicleNumber"
+                render={({ field }) => (
+                    <FormItem>
+                    <FormLabel>Biển số xe</FormLabel>
+                    <FormControl>
+                        <Input placeholder="51C-123.45" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                    </FormItem>
+                )}
+                />
+            </div>
             <DialogFooter className="pt-4">
               <DialogClose asChild>
                 <Button type="button" variant="ghost">Hủy</Button>
