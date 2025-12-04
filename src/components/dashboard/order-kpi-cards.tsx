@@ -6,6 +6,7 @@ import {
   Package,
   Clock,
   DollarSign,
+  Truck,
 } from "lucide-react";
 import { isThisMonth, parseISO } from 'date-fns';
 
@@ -17,7 +18,7 @@ type Kpi = {
 };
 
 export function OrderKpiCards() {
-  const { orders } = useData();
+  const { orders, deliveries } = useData();
 
   const currentMonthOrders = orders.filter(o => isThisMonth(parseISO(o.orderDate)));
   
@@ -26,6 +27,12 @@ export function OrderKpiCards() {
   const revenueMonth = currentMonthOrders
     .filter(o => o.status === 'Confirmed')
     .reduce((acc, o) => acc + o.totalAmount, 0);
+
+  const deliveredThisMonth = deliveries.filter(d => 
+    d.status === 'Đã giao' && d.deliveryDateTime && isThisMonth(parseISO(d.deliveryDateTime))
+  );
+
+  const totalDeliveryCostMonth = deliveredThisMonth.reduce((acc, d) => acc + (d.deliveryFee || 0), 0);
 
   
   const kpis: Kpi[] = [
@@ -47,10 +54,16 @@ export function OrderKpiCards() {
       icon: DollarSign,
       description: "Tổng doanh thu từ các đơn đã xác nhận trong tháng.",
     },
+     {
+      title: "Chi phí giao hàng (tháng)",
+      value: new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(totalDeliveryCostMonth),
+      icon: Truck,
+      description: "Tổng chi phí cho các đơn đã giao thành công trong tháng.",
+    },
   ];
 
   return (
-    <div className="grid gap-4 md:grid-cols-3">
+    <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
       {kpis.map((kpi) => (
         <Card key={kpi.title}>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
