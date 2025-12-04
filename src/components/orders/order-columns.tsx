@@ -8,9 +8,10 @@ import {
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
+  DropdownMenuSeparator,
 } from "@/components/ui/dropdown-menu";
 import { Button } from "@/components/ui/button";
-import { Check, Ban } from "lucide-react";
+import { Check, Ban, MoreHorizontal, Printer } from "lucide-react";
 import { useData } from "@/hooks/use-data";
 import { useToast } from "@/hooks/use-toast";
 import { cn } from "@/lib/utils";
@@ -33,6 +34,10 @@ const StatusCell = ({ order }: { order: Order }) => {
       title: "Cập nhật thành công",
       description: `Trạng thái đơn hàng đã đổi thành "${newStatus}".`,
     });
+  };
+  
+  const handlePrint = () => {
+    window.open(`/print/order/${order.id}`, '_blank');
   };
 
   const getNextStatuses = (): { status: OrderStatus; label: string; icon: React.ElementType; isDestructive?: boolean }[] => {
@@ -60,7 +65,21 @@ const StatusCell = ({ order }: { order: Order }) => {
   );
 
   if (!nextStatuses.length) {
-    return button;
+     return (
+        <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+                 <Button variant={config.variant} className="w-[150px] justify-center">
+                    {order.status} <MoreHorizontal className="ml-2 h-4 w-4" />
+                </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+                 <DropdownMenuItem onClick={handlePrint}>
+                    <Printer className="mr-2 h-4 w-4" />
+                    In đơn hàng
+                </DropdownMenuItem>
+            </DropdownMenuContent>
+        </DropdownMenu>
+     );
   }
 
   return (
@@ -79,6 +98,11 @@ const StatusCell = ({ order }: { order: Order }) => {
             {label}
           </DropdownMenuItem>
         ))}
+         <DropdownMenuSeparator />
+        <DropdownMenuItem onClick={handlePrint}>
+            <Printer className="mr-2 h-4 w-4" />
+            In đơn hàng
+        </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
   );
@@ -105,6 +129,15 @@ export const orderColumns = [
     accessorKey: "deliveryDate",
     header: "Ngày giao",
     cell: ({ row }: { row: { original: Order } }) => format(new Date(row.original.deliveryDate), "dd/MM/yyyy"),
+  },
+  {
+    accessorKey: "confirmationDate",
+    header: "Ngày giờ xác nhận",
+    cell: ({ row }: { row: { original: Order } }) => {
+      return row.original.confirmationDate
+        ? format(new Date(row.original.confirmationDate), "dd/MM/yyyy HH:mm")
+        : "N/A";
+    },
   },
    {
     accessorKey: "totalAmount",
