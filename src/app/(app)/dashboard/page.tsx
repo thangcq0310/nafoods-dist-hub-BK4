@@ -5,6 +5,7 @@ import { AtRiskOrdersTable } from "@/components/dashboard/at-risk-orders-table";
 import { VendorDistributionChart } from "@/components/dashboard/vendor-distribution-chart";
 import { OnTimeDeliveryChart } from "@/components/dashboard/on-time-delivery-chart";
 import { Separator } from "@/components/ui/separator";
+import { DeliveryKpiCards } from "@/components/dashboard/delivery-kpi-cards";
 
 export default function DashboardPage() {
   return (
@@ -31,6 +32,7 @@ export default function DashboardPage() {
         {/* Section 2: Deliveries Status */}
          <div className="space-y-4">
             <h2 className="text-xl font-semibold tracking-tight">2. Giám sát Giao hàng</h2>
+            <DeliveryKpiCards />
             <div className="grid gap-4 md:grid-cols-1">
                 <DeliveryStatusChart />
             </div>
