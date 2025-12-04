@@ -11,10 +11,11 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Button } from "@/components/ui/button";
-import { MoreHorizontal, Truck, Printer, CheckCircle, Clock, XCircle, ArrowRight, Package, Ban, Play } from "lucide-react";
+import { MoreHorizontal, Truck, Printer, CheckCircle, Clock, XCircle, ArrowRight, Package, Ban, Play, Edit } from "lucide-react";
 import { useData } from "@/hooks/use-data";
 import { useToast } from "@/hooks/use-toast";
 import { CreateDeliverySheet } from "./create-delivery-sheet";
+import { EditDeliverySheet } from "./edit-delivery-sheet";
 import { cn } from "@/lib/utils";
 
 const deliveryStatusConfig: { [key in DeliveryStatus]: { variant: "default" | "secondary" | "destructive" | "outline" | "accent", icon: React.ElementType } } = {
@@ -120,6 +121,12 @@ export const RowActions = ({ delivery }: { delivery: Delivery }) => {
             );
         case "Chờ giao":
         case "Đang giao":
+             return (
+                <div className="flex items-center gap-2">
+                    <EditDeliverySheet delivery={delivery} />
+                    <ActionButton onClick={handlePrint} icon={Printer} label="In phiếu" />
+                </div>
+             );
         case "Đã giao":
         case "Thất bại":
         case "Đã hủy":

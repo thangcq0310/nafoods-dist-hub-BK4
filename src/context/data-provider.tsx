@@ -20,8 +20,9 @@ export interface DataContextType {
   vendors: Vendor[];
   updateOrderStatus: (orderId: string, status: OrderStatus) => void;
   updateDeliveryStatus: (deliveryId: string, status: DeliveryStatus) => void;
-  createOrder: (newOrder: Omit<Order, 'id' | 'orderDate'>) => void;
+  createOrder: (newOrder: Omit<Order, 'id' | 'orderDate' | 'confirmationDate'>) => void;
   createDelivery: (newDeliveryData: { orderId: string, vendorId: string, deliveryDateTime: string, driverName: string, driverPhone: string, vehicleNumber: string }) => void;
+  updateDelivery: (deliveryId: string, updatedData: { vendorId: string, deliveryDateTime: string, driverName: string, driverPhone: string, vehicleNumber: string }) => void;
   createProduct: (newProduct: Omit<Product, 'id'>) => void;
   createCustomer: (newCustomer: Omit<Customer, 'id'>) => void;
   createVendor: (newVendor: Omit<Vendor, 'id'>) => void;
@@ -41,7 +42,7 @@ export function DataProvider({ children }: { children: ReactNode }) {
       prevOrders.map(order => {
         if (order.id === orderId) {
           const updatedOrder = { ...order, status };
-          if (status === 'Confirmed') {
+          if (status === 'Confirmed' && !order.confirmationDate) {
             updatedOrder.confirmationDate = new Date().toISOString();
           }
           return updatedOrder;
@@ -87,7 +88,7 @@ export function DataProvider({ children }: { children: ReactNode }) {
     );
   }, []);
 
-  const createOrder = useCallback((newOrderData: Omit<Order, 'id' | 'orderDate'>) => {
+  const createOrder = useCallback((newOrderData: Omit<Order, 'id' | 'orderDate' | 'confirmationDate'>) => {
     const newOrder: Order = {
       ...newOrderData,
       id: `DH-${String(orders.length + 1).padStart(5, '0')}`,
@@ -109,6 +110,25 @@ export function DataProvider({ children }: { children: ReactNode }) {
             driverPhone: newDeliveryData.driverPhone,
             vehicleNumber: newDeliveryData.vehicleNumber,
             status: 'Chờ giao' as DeliveryStatus,
+          };
+        }
+        return delivery;
+      })
+    );
+  }, [vendors]);
+
+  const updateDelivery = useCallback((deliveryId: string, updatedData: { vendorId: string, deliveryDateTime: string, driverName: string, driverPhone: string, vehicleNumber: string }) => {
+    setDeliveries(prevDeliveries => 
+      prevDeliveries.map(delivery => {
+        if (delivery.id === deliveryId) {
+          const vendor = vendors.find(v => v.id === updatedData.vendorId);
+          return {
+            ...delivery,
+            vendor,
+            deliveryDateTime: updatedData.deliveryDateTime,
+            driverName: updatedData.driverName,
+            driverPhone: updatedData.driverPhone,
+            vehicleNumber: updatedData.vehicleNumber,
           };
         }
         return delivery;
@@ -150,6 +170,7 @@ export function DataProvider({ children }: { children: ReactNode }) {
     updateDeliveryStatus,
     createOrder,
     createDelivery,
+    updateDelivery,
     createProduct,
     createCustomer,
     createVendor,
