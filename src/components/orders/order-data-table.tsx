@@ -27,8 +27,12 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { Button } from "@/components/ui/button";
+import { FileDown } from "lucide-react";
 import type { Order } from "@/lib/types";
+import { exportToExcel } from "@/lib/export";
 import { Card } from "../ui/card";
+import { format } from "date-fns";
 
 export function OrderDataTable() {
   const { orders } = useData();
@@ -60,6 +64,18 @@ export function OrderDataTable() {
     getCoreRowModel: getCoreRowModel(),
   });
 
+  const handleExport = () => {
+    const dataToExport = data.map(o => ({
+        'Mã Đơn': o.id,
+        'Khách hàng': o.customer.name,
+        'Ngày đặt': format(new Date(o.orderDate), 'dd/MM/yyyy'),
+        'Ngày giao': format(new Date(o.deliveryDate), 'dd/MM/yyyy'),
+        'Thời gian xác nhận': o.confirmationDate ? format(new Date(o.confirmationDate), 'dd/MM/yyyy HH:mm') : 'N/A',
+        'Trạng thái': o.status,
+        'Sản phẩm': o.items.map(item => `${item.product.name} (SL: ${item.quantity} ${item.unit})`).join('; ')
+    }));
+    exportToExcel(dataToExport, "Danh_sach_don_hang");
+  };
 
   return (
     <Card className="p-4">
@@ -82,6 +98,9 @@ export function OrderDataTable() {
               <SelectItem value="Canceled">Đã hủy</SelectItem>
             </SelectContent>
           </Select>
+          <Button onClick={handleExport} variant="outline">
+            <FileDown className="mr-2 h-4 w-4" /> Export Excel
+          </Button>
           <CreateOrderSheet />
         </div>
       </div>

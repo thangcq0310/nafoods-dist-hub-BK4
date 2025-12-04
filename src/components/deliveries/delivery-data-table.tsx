@@ -22,8 +22,12 @@ import {
 import { useData } from "@/hooks/use-data";
 import { deliveryColumns, RowActions } from "./delivery-columns";
 import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import { FileDown } from "lucide-react";
 import type { Delivery, DeliveryStatus } from "@/lib/types";
+import { exportToExcel } from "@/lib/export";
 import { Card } from "../ui/card";
+import { format } from "date-fns";
 
 interface DeliveryDataTableProps {
   statusFilter: DeliveryStatus[] | null;
@@ -78,6 +82,24 @@ export function DeliveryDataTable({ statusFilter }: DeliveryDataTableProps) {
     }
   });
 
+  const handleExport = () => {
+    const dataToExport = data.map(d => ({
+        'Mã Giao Hàng': d.id,
+        'Mã Đơn Hàng': d.order.id,
+        'Khách Hàng': d.order.customer.name,
+        'Địa Chỉ Giao': `${d.order.shippingAddress.street}, ${d.order.shippingAddress.city}`,
+        'Phí Giao Hàng': d.deliveryFee || 0,
+        'Ngày Giao': d.deliveryDateTime ? format(new Date(d.deliveryDateTime), 'dd/MM/yyyy HH:mm') : 'N/A',
+        'Tài xế': d.driverName || 'N/A',
+        'SĐT Tài xế': d.driverPhone || 'N/A',
+        'Biển số xe': d.vehicleNumber || 'N/A',
+        'Nhà vận tải': d.vendor?.name || 'N/A',
+        'Trạng thái': d.status,
+    }));
+    exportToExcel(dataToExport, `Danh_sach_giao_hang_${statusFilter ? statusFilter.join('_') : 'all'}`);
+  };
+
+
   return (
     <Card className="p-4">
       <div className="flex items-center justify-between gap-4 mb-4">
@@ -87,6 +109,9 @@ export function DeliveryDataTable({ statusFilter }: DeliveryDataTableProps) {
           onChange={(e) => setFilter(e.target.value)}
           className="max-w-md"
         />
+        <Button onClick={handleExport} variant="outline">
+          <FileDown className="mr-2 h-4 w-4" /> Export Excel
+        </Button>
       </div>
       <div className="rounded-md border">
         <Table>

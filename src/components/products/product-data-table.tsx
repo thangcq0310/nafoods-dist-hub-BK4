@@ -16,10 +16,13 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { Button } from "@/components/ui/button";
+import { FileDown } from "lucide-react";
 import { useData } from "@/hooks/use-data";
 import { productColumns } from "./product-columns";
 import type { Product } from "@/lib/types";
 import { Card } from "../ui/card";
+import { exportToExcel } from "@/lib/export";
 
 export function ProductDataTable() {
   const { products } = useData();
@@ -35,8 +38,23 @@ export function ProductDataTable() {
     getCoreRowModel: getCoreRowModel(),
   });
 
+  const handleExport = () => {
+    const dataToExport = data.map(p => ({
+      'Mã Sản phẩm': p.id,
+      'Tên Sản phẩm': p.name,
+      'Danh mục': p.category,
+      'Trạng thái': p.status,
+    }));
+    exportToExcel(dataToExport, "Danh_sach_san_pham");
+  };
+
   return (
     <Card className="p-4 bg-card">
+       <div className="flex justify-end mb-4">
+        <Button onClick={handleExport} variant="outline">
+          <FileDown className="mr-2 h-4 w-4" /> Export Excel
+        </Button>
+      </div>
       <div className="rounded-md border">
         <Table>
            <TableHeader>

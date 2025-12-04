@@ -16,10 +16,13 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { Button } from "@/components/ui/button";
+import { FileDown } from "lucide-react";
 import { useData } from "@/hooks/use-data";
 import { vendorColumns } from "./vendor-columns";
 import type { Vendor } from "@/lib/types";
 import { Card } from "../ui/card";
+import { exportToExcel } from "@/lib/export";
 
 export function VendorDataTable() {
   const { vendors } = useData();
@@ -35,8 +38,24 @@ export function VendorDataTable() {
     getCoreRowModel: getCoreRowModel(),
   });
 
+  const handleExport = () => {
+    const dataToExport = data.map(v => ({
+      'Mã Nhà vận tải': v.id,
+      'Tên Nhà vận tải': v.name,
+      'Người liên hệ': v.contactPerson,
+      'Số điện thoại': v.phone,
+      'Trạng thái': v.status,
+    }));
+    exportToExcel(dataToExport, "Danh_sach_nha_van_tai");
+  };
+
   return (
     <Card className="p-4 bg-card">
+      <div className="flex justify-end mb-4">
+        <Button onClick={handleExport} variant="outline">
+          <FileDown className="mr-2 h-4 w-4" /> Export Excel
+        </Button>
+      </div>
       <div className="rounded-md border">
         <Table>
            <TableHeader>
