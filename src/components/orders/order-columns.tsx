@@ -18,7 +18,7 @@ import { cn } from "@/lib/utils";
 
 const statusConfig: { [key in OrderStatus]: { variant: "default" | "secondary" | "destructive" | "accent" } } = {
   "Confirmed": "default",
-  "Pending Approval": "secondary",
+  "Pending Approval": "accent",
   "Canceled": "destructive",
 };
 
