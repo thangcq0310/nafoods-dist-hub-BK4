@@ -56,13 +56,13 @@ const StatusCell = ({ order }: { order: Order }) => {
   const nextStatuses = getNextStatuses();
 
   const button = (
-    <Button variant={config.variant} className="w-[150px] justify-center" disabled={!nextStatuses.length}>
+    <Button size="sm" variant={config.variant} className="w-[120px] justify-center" disabled={!nextStatuses.length}>
         {order.status}
     </Button>
   );
 
   if (!nextStatuses.length) {
-     return <Button variant={config.variant} className="w-[150px] justify-center cursor-default">{order.status}</Button>;
+     return <Button size="sm" variant={config.variant} className="w-[120px] justify-center cursor-default">{order.status}</Button>;
   }
 
   return (
