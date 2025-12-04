@@ -1,21 +1,25 @@
-import { KpiCards } from "@/components/dashboard/kpi-cards";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { OrderStatusChart } from "@/components/dashboard/order-status-chart";
+import { DeliveryStatusChart } from "@/components/dashboard/delivery-status-chart";
+import { OrderKpiCards } from "@/components/dashboard/order-kpi-cards";
 
 export default function DashboardPage() {
   return (
     <div className="container mx-auto py-6">
       <div className="space-y-6">
         <h1 className="text-3xl font-bold tracking-tight">Bảng điều khiển Kho vận</h1>
-        <Tabs defaultValue="overview">
-          <TabsList>
-            <TabsTrigger value="overview">Tổng quan</TabsTrigger>
-            <TabsTrigger value="analytics" disabled>Phân tích</TabsTrigger>
-          </TabsList>
-          <TabsContent value="overview" className="space-y-4 pt-4">
-             <KpiCards />
-          </TabsContent>
-        </Tabs>
+        
+        <div className="space-y-4">
+          <OrderKpiCards />
+          
+          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-7">
+              <div className="col-span-12 lg:col-span-4">
+                <OrderStatusChart />
+              </div>
+              <div className="col-span-12 lg:col-span-3">
+                 <DeliveryStatusChart />
+              </div>
+          </div>
+        </div>
       </div>
     </div>
   );

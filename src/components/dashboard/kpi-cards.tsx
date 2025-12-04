@@ -1,3 +1,6 @@
+// This file is no longer used for the new dashboard layout.
+// The new component is order-kpi-cards.tsx
+// I will remove this file in a future step if it's not referenced anywhere else.
 "use client";
 
 import { useData } from "@/hooks/use-data";
