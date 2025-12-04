@@ -12,7 +12,7 @@ export function AppHeader() {
           <Link href="/dashboard" className="mr-6 flex items-center gap-2">
             <Truck className="h-6 w-6 text-primary" />
             <span className="hidden font-bold text-xl sm:inline-block font-headline">
-              Nafoods Distribution
+              Nafoods Distribution Hub
             </span>
           </Link>
         </div>
