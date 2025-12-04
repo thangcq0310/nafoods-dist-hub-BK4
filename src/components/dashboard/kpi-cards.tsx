@@ -37,7 +37,7 @@ export function KpiCards() {
       description: "Đơn hàng đã xác nhận, chờ tạo lệnh giao.",
     },
     {
-      title: "Chờ Giao Hàng",
+      title: "Chờ Lấy Hàng",
       value: waitingForPickup,
       icon: Clock,
       description: "Lệnh giao đã tạo, chờ nhà vận tải lấy hàng.",
@@ -46,7 +46,7 @@ export function KpiCards() {
       title: "Đang Vận Chuyển",
       value: inTransit,
       icon: Truck,
-      description: "Đơn hàng đang trên đường giao.",
+      description: "Đơn hàng đang trên đường giao cho khách.",
     },
     {
       title: "Hoàn Thành Hôm Nay",
@@ -55,7 +55,7 @@ export function KpiCards() {
       description: "Đơn hàng đã giao thành công trong ngày.",
     },
     {
-      title: "Thất Bại / Đã Hủy",
+      title: "Giao Thất Bại / Hủy",
       value: failedOrCanceled,
       icon: XCircle,
       description: "Đơn hàng giao thất bại hoặc đã bị hủy.",

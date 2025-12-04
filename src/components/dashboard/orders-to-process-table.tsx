@@ -11,19 +11,12 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
 import type { OrderStatus, Order } from "@/lib/types";
 import { format } from 'date-fns';
 import { Button } from "../ui/button";
 import { ArrowRight, Check, Ban } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { useRouter } from "next/navigation";
-
-const statusConfig: { [key in OrderStatus]: { variant: "default" | "accent" | "destructive" | "outline" } } = {
-  "Confirmed": "default",
-  "Pending": "accent",
-  "Canceled": "destructive",
-};
 
 export function OrdersToProcessTable() {
   const { orders, updateOrderStatus } = useData();
@@ -42,10 +35,6 @@ export function OrdersToProcessTable() {
       description: `Đơn hàng ${orderId} đã được ${status === 'Confirmed' ? 'xác nhận' : 'hủy'}.`
     });
   };
-
-  const navigateToOrders = () => {
-    router.push('/orders');
-  }
 
   return (
     <Card>
