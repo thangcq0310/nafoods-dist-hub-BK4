@@ -1,3 +1,4 @@
+
 import type { Customer, Product, Vendor, Order, Delivery, OrderStatus, DeliveryStatus, Address } from './types';
 import { subDays, formatISO } from 'date-fns';
 
@@ -40,16 +41,28 @@ export const vendors: Vendor[] = [
 const generateOrders = (): Order[] => {
   const statuses: OrderStatus[] = ['Pending Approval', 'Confirmed', 'Canceled'];
   let orders: Order[] = [];
+  const baseDate = new Date(2024, 6, 20, 10, 30, 0); // A static date to avoid hydration errors
+
   for (let i = 1; i <= 25; i++) {
     const customer = customers[i % customers.length];
     const status = i > 20 ? 'Pending Approval' : (i < 5 ? 'Canceled' : 'Confirmed');
+    const orderDate = subDays(baseDate, Math.floor(i/2));
+    const deliveryDate = subDays(baseDate, Math.floor(i/2) - 2);
+    
+    let confirmationDate: string | undefined;
+    if (status === 'Confirmed') {
+        const confDate = subDays(baseDate, Math.floor(i/2) - 1)
+        confDate.setHours(14, 6, 0); // Static time
+        confirmationDate = formatISO(confDate);
+    }
+
     orders.push({
       id: `DH-${String(i).padStart(5, '0')}`,
       customer: customer,
       shippingAddress: customer.addresses[0],
-      orderDate: formatISO(subDays(new Date(), Math.floor(i/2))),
-      deliveryDate: formatISO(subDays(new Date(), Math.floor(i/2) - 2)),
-      confirmationDate: status === 'Confirmed' ? formatISO(subDays(new Date(), Math.floor(i/2) - 1)) : undefined,
+      orderDate: formatISO(orderDate),
+      deliveryDate: formatISO(deliveryDate),
+      confirmationDate: confirmationDate,
       items: [
         { product: products[i % products.length], quantity: i * 2, unit: 'Box' },
         ...(i % 2 === 0 ? [{ product: products[(i + 1) % products.length], quantity: i + 5, unit: 'Kg' as 'Kg' }] : [])
@@ -65,6 +78,7 @@ export const orders: Order[] = generateOrders();
 const generateDeliveries = (orders: Order[]): Delivery[] => {
   let deliveries: Delivery[] = [];
   const confirmedOrders = orders.filter(o => o.status === 'Confirmed' || o.status === 'Canceled');
+  const baseDate = new Date(); // Can be dynamic here, doesn't affect hydration as much if not rendered directly
   
   const deliveryStatuses: DeliveryStatus[] = ['Cần giao', 'Chờ giao', 'Đang giao', 'Đã giao', 'Thất bại', 'Đã hủy'];
 
@@ -83,7 +97,7 @@ const generateDeliveries = (orders: Order[]): Delivery[] => {
       
       deliveryDetails = {
         vendor: vendor,
-        deliveryDateTime: formatISO(new Date(order.deliveryDate)),
+        deliveryDateTime: order.deliveryDate, // Use the static delivery date
         driverName: `Tài xế ${i+1}`,
         driverPhone: `090${i.toString().padStart(7, '0')}`,
         vehicleNumber: `51C-${i.toString().padStart(5,'0')}`,
