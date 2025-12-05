@@ -127,6 +127,10 @@ export default function PrintOrderPage() {
         @media print {
           body {
             -webkit-print-color-adjust: exact;
+            color-adjust: exact;
+          }
+          .print-hidden {
+            display: none !important;
           }
         }
       `}</style>
