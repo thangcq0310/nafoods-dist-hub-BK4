@@ -95,3 +95,5 @@ This is the final configuration step. Vercel is smart and handles most of this f
     *   Once it's done, you'll get a "Congratulations!" screen with a preview of your live website.
 
 Vercel will give you a public URL (like `distri.vercel.app`). That's it! Your application is now live on the internet. Any time you `git push` new changes to your GitHub repository, Vercel will automatically redeploy the site with the updates.
+## Tối ưu hóa Lộ trình
+- Đã bắt đầu triển khai thuật toán Dijkstra cơ bản.
